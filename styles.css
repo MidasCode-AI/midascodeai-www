@@ -885,6 +885,10 @@ body {
 /* Responsive Design */
 /* Tablet styles */
 @media (max-width: 1024px) {
+    .hero {
+        padding-top: calc(80px + var(--spacing-lg));
+    }
+
     .hero-container {
         padding: 0 var(--spacing-lg);
         gap: var(--spacing-lg);
@@ -936,7 +940,7 @@ body {
     .hero {
         height: auto;
         min-height: 100vh;
-        padding: var(--spacing-xl) 0;
+        padding: calc(80px + var(--spacing-xl)) 0 var(--spacing-xl);
     }
 
     .hero-container {
@@ -1056,6 +1060,10 @@ body {
 
 /* Small mobile styles */
 @media (max-width: 480px) {
+    .hero {
+        padding: calc(80px + var(--spacing-lg)) 0 var(--spacing-lg);
+    }
+
     .hero-title {
         font-size: 2rem;
         line-height: 1.1;
