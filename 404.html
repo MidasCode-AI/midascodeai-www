@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page not found — MidasCode.AI</title>
+    <meta name="robots" content="noindex">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <!-- Styles are inlined so the page renders correctly no matter which missing URL
+         serves it (deep paths break relative CSS) or how it's opened. Keep the tokens
+         in sync with styles.css if the theme changes. -->
+    <style>
+        :root {
+            --gold: #D9B36C;
+            --gold-bright: #EACD8F;
+            --gold-glow: rgba(217, 179, 108, 0.12);
+            --bg: #0B0B0E;
+            --border: #26262F;
+            --border-gold: rgba(217, 179, 108, 0.35);
+            --text-primary: #F2F0EB;
+            --text-secondary: #B4B2AC;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --nav-height: 4.25rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .navbar {
+            height: var(--nav-height);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-container {
+            max-width: 1120px;
+            height: 100%;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-decoration: none;
+            letter-spacing: -0.01em;
+        }
+
+        .logo-text {
+            color: var(--text-primary);
+        }
+
+        .logo-ai {
+            color: var(--gold);
+        }
+
+        .error-page {
+            min-height: calc(100vh - var(--nav-height));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 3rem 1.5rem 6rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .error-page::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -62%);
+            width: 55rem;
+            max-width: 90%;
+            height: 30rem;
+            background: radial-gradient(ellipse at center, var(--gold-glow), transparent 65%);
+            pointer-events: none;
+        }
+
+        .error-page>* {
+            position: relative;
+        }
+
+        .error-code {
+            font-family: var(--font-mono);
+            font-size: clamp(4rem, 14vw, 8rem);
+            font-weight: 500;
+            line-height: 1;
+            color: var(--gold);
+            letter-spacing: 0.02em;
+            margin-bottom: 1.5rem;
+        }
+
+        .error-title {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5.5vw, 3.6rem);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 1.5rem;
+        }
+
+        .error-subtitle {
+            color: var(--text-secondary);
+            font-size: clamp(1rem, 1.6vw, 1.15rem);
+            max-width: 40rem;
+            margin: 0 auto 2.5rem;
+        }
+
+        .error-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            padding: 0.8rem 1.6rem;
+            border-radius: 6px;
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: #16130B;
+        }
+
+        .btn-primary:hover,
+        .btn-primary:focus-visible {
+            background: var(--gold-bright);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border-color: var(--border);
+        }
+
+        .btn-secondary:hover,
+        .btn-secondary:focus-visible {
+            border-color: var(--border-gold);
+            color: var(--gold);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <span class="logo-text">MidasCode</span><span class="logo-ai">.AI</span>
+            </a>
+        </div>
+    </header>
+    <main class="error-page">
+        <p class="error-code">404</p>
+        <h1 class="error-title">This page doesn't exist.</h1>
+        <p class="error-subtitle">
+            The address may be outdated or mistyped. Head back to the homepage, or get in touch if you
+            were looking for something specific.
+        </p>
+        <div class="error-buttons">
+            <a href="/" class="btn btn-primary">Back to the homepage</a>
+            <a href="/#contact" class="btn btn-secondary">Get in touch</a>
+        </div>
+    </main>
+</body>
+
+</html>

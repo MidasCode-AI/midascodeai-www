@@ -4,245 +4,263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MidasCode.AI - Full-Stack AI Trading Infrastructure & Autonomous Systems</title>
+    <title>MidasCode.AI — Trading Systems: Algorithms, AI &amp; Quant Infrastructure</title>
     <meta name="description"
-        content="MidasCode.AI builds full-stack AI trading infrastructure — quant servers, autonomous trading agents, and AI-powered systems that transform market opportunities into golden returns.">
+        content="MidasCode builds and runs live trading systems — rules-based algorithms, hybrid algorithm+AI systems, AI-native agents, and the quant infrastructure underneath.">
+    <link rel="canonical" href="https://midascode.ai/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://midascode.ai/">
+    <meta property="og:title" content="MidasCode.AI — Trading Systems: Algorithms, AI & Quant Infrastructure">
+    <meta property="og:description"
+        content="Rules-based algorithms, hybrid algorithm+AI systems, AI-native agents, and quant infrastructure. Every system passes the same validation pipeline before it touches live capital.">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="MidasCode.AI — Trading Systems: Algorithms, AI & Quant Infrastructure">
+    <meta name="twitter:description"
+        content="Rules-based algorithms, hybrid algorithm+AI systems, AI-native agents, and quant infrastructure. Every system passes the same validation pipeline before it touches live capital.">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "MidasCode.AI",
+        "url": "https://midascode.ai/",
+        "email": "hello@midascode.ai",
+        "description": "MidasCode builds and operates trading systems — rules-based algorithms, hybrid algorithm+AI systems, AI-native agents, and quant infrastructure."
+    }
+    </script>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <!-- Reveal animations are gated on this class so content stays visible without JS -->
+    <script>document.documentElement.classList.add('js')</script>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet">
 </head>
 
 <body>
     <!-- Navigation -->
-    <nav class="navbar">
+    <header class="navbar">
         <div class="nav-container">
-            <div class="nav-logo">
+            <a href="#top" class="nav-logo">
                 <span class="logo-text">MidasCode</span><span class="logo-ai">.AI</span>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="#home" class="nav-link">Home</a></li>
-                <li><a href="#about" class="nav-link">About</a></li>
-                <li><a href="#features" class="nav-link">Technology</a></li>
-                <li><a href="#contact" class="nav-link">Contact</a></li>
-            </ul>
-            <div class="hamburger">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
+            </a>
+            <nav>
+                <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Toggle menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="#systems" class="nav-link">What We Build</a></li>
+                    <li><a href="#validation" class="nav-link">Validation</a></li>
+                    <li><a href="#about" class="nav-link">About</a></li>
+                    <li><a href="#contact" class="nav-link nav-link-cta">Contact</a></li>
+                </ul>
+            </nav>
         </div>
-    </nav>
+    </header>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="hero-background">
-            <div class="golden-particles"></div>
-        </div>
-        <div class="hero-container">
-            <div class="hero-content">
+    <main id="top">
+        <!-- Hero -->
+        <section class="hero">
+            <div class="hero-container">
+                <p class="hero-eyebrow">Systematic Trading Technology</p>
                 <h1 class="hero-title">
-                    Turn Every Investment into <span class="golden-text">Gold</span>
+                    We build trading systems.<br>
+                    Some are rules. Some are AI.<br>
+                    <span class="accent-text">All pass the same tests.</span>
                 </h1>
                 <p class="hero-subtitle">
-                    Harness the power of autonomous AI agents, quant infrastructure, and intelligent systems that
-                    transform market opportunities into golden returns.
-                    Where ancient wisdom meets the frontier of artificial intelligence.
+                    Live algorithms, AI modules for entries, filters, and trade management, and fully
+                    autonomous agents — every system goes through the same validation pipeline before it
+                    touches live capital.
                 </p>
                 <div class="hero-buttons">
-                    <a href="#contact" class="btn btn-primary">Start Investing</a>
-                    <a href="#features" class="btn btn-secondary">Learn More</a>
+                    <a href="#systems" class="btn btn-primary">See What We Build</a>
+                    <a href="#contact" class="btn btn-secondary">Get in Touch</a>
                 </div>
             </div>
-            <div class="hero-visual">
-                <div class="midas-crown">
-                    <div class="crown-gem"></div>
-                </div>
-            </div>
+        </section>
+
+        <!-- Markets strip -->
+        <div class="markets-strip" aria-label="Markets covered">
+            <p>Forex &middot; Gold &amp; Metals &middot; Indices &middot; Stocks &middot; Crypto &middot; Commodities
+                &middot; + More</p>
         </div>
-    </section>
 
-    <!-- About Section -->
-    <section id="about" class="about">
-        <div class="container">
-            <div class="about-content">
-                <div class="about-text">
-                    <h2 class="section-title">The Midas Touch for Modern Markets</h2>
-                    <p class="about-description">
-                        At MidasCode.AI, we've reimagined the legendary Midas touch for the digital age.
-                        We build the full stack — from low-latency quant servers and execution infrastructure
-                        to autonomous AI agents that analyze, decide, and trade without human intervention.
-                    </p>
-                    <p class="about-description">
-                        Founded by active traders, AI researchers, and quantitative engineers who have built
-                        and run profitable strategies across equities, crypto, and derivatives — we know what
-                        it takes to generate returns, and we build systems that do it at scale.
-                    </p>
-                    <div class="stats">
-                        <div class="stat">
-                            <span class="stat-number">100%</span>
-                            <span class="stat-label">Uptime</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-number">24/7</span>
-                            <span class="stat-label">Market Monitoring</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-number">&lt;1ms</span>
-                            <span class="stat-label">Execution Speed</span>
-                        </div>
-                    </div>
+        <!-- What We Build -->
+        <section id="systems" class="systems section">
+            <div class="container">
+                <h2 class="section-title">Four product lines. One standard.</h2>
+                <p class="section-intro">
+                    Behind each system is the same loop: quantitative research finds the edge and shapes the
+                    strategy, an algorithm automates and executes it, and infrastructure runs it live — with AI
+                    used wherever it earns its place, in the research or the execution. Some systems are pure
+                    logic, some pure AI, most in between; the mix is chosen per market and per job, not by
+                    ideology.
+                </p>
+                <div class="systems-grid">
+                    <article class="system-card reveal">
+                        <span class="card-index">01</span>
+                        <h3 class="card-title">Core Algorithms</h3>
+                        <p class="card-body">
+                            Rules-based strategies running live on real capital. Deterministic logic, fully
+                            auditable, every trade explained by a rule.
+                        </p>
+                        <p class="card-when"><span>Choose this when</span> you want deterministic, explainable
+                            behavior.</p>
+                    </article>
+                    <article class="system-card reveal">
+                        <span class="card-index">02</span>
+                        <h3 class="card-title">Hybrid Systems — Algorithm + AI</h3>
+                        <p class="card-body">
+                            Classic strategies extended with AI where it measurably helps: entry signals, trade
+                            filters, and trade management layers on top of a rules-based core.
+                        </p>
+                        <p class="card-when"><span>Choose this when</span> you want a known strategy made sharper.</p>
+                    </article>
+                    <article class="system-card reveal">
+                        <span class="card-index">03</span>
+                        <h3 class="card-title">AI-Native Systems &amp; Autonomous Agents</h3>
+                        <p class="card-body">
+                            Systems where the model is the strategy: AI-driven decision engines and LLM-powered
+                            agents that analyze, decide, and manage trades under defined risk limits.
+                        </p>
+                        <p class="card-when"><span>Choose this when</span> the behavior you're trading can't be written
+                            down as explicit rules.</p>
+                    </article>
+                    <article class="system-card reveal">
+                        <span class="card-index">04</span>
+                        <h3 class="card-title">Quant Infrastructure</h3>
+                        <p class="card-body">
+                            The execution servers, data pipelines, monitoring, and risk controls that every system
+                            above runs on. Also available as engineering work for your own strategies.
+                        </p>
+                        <p class="card-when"><span>Choose this when</span> you have the strategy and need it running
+                            reliably.</p>
+                    </article>
                 </div>
-                <div class="about-visual">
-                    <div class="golden-sphere">
-                        <div class="sphere-ring"></div>
-                        <div class="sphere-ring"></div>
-                        <div class="sphere-ring"></div>
-                    </div>
+                <p class="systems-markets">
+                    Our systems run across forex, indices, stocks, crypto, metals and commodities — and more.
+                    Each system is validated per instrument; we don't assume an edge transfers until testing says
+                    it does.
+                </p>
+            </div>
+        </section>
+
+        <!-- Validation pipeline -->
+        <section id="validation" class="validation section">
+            <div class="container">
+                <h2 class="section-title">How a system earns live capital</h2>
+                <p class="section-intro">
+                    Every system — rules-based or AI-driven — goes through the same gate sequence. Nothing skips
+                    a stage because it's fashionable, and nothing is retired because it's old.
+                </p>
+                <ol class="pipeline">
+                    <li class="pipeline-step reveal">
+                        <span class="step-number">1</span>
+                        <h3 class="step-title">Quant research &amp; backtest</h3>
+                        <p class="step-body">Find the edge: hypothesis, historical testing, cost-realistic
+                            assumptions.</p>
+                    </li>
+                    <li class="pipeline-step reveal">
+                        <span class="step-number">2</span>
+                        <h3 class="step-title">Out-of-sample &amp; walk-forward</h3>
+                        <p class="step-body">The part of the data the system never saw.</p>
+                    </li>
+                    <li class="pipeline-step reveal">
+                        <span class="step-number">3</span>
+                        <h3 class="step-title">Demo incubation</h3>
+                        <p class="step-body">Live market conditions, zero capital at risk.</p>
+                    </li>
+                    <li class="pipeline-step reveal">
+                        <span class="step-number">4</span>
+                        <h3 class="step-title">Small live allocation</h3>
+                        <p class="step-body">Real money, real slippage — the stage backtests can't fake.</p>
+                    </li>
+                    <li class="pipeline-step reveal">
+                        <span class="step-number">5</span>
+                        <h3 class="step-title">Scale or retire</h3>
+                        <p class="step-body">Systems keep their allocation only while live behavior matches
+                            expectations.</p>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- About -->
+        <section id="about" class="about section">
+            <div class="container">
+                <h2 class="section-title">Built by practitioners, not a marketing team</h2>
+                <p class="about-body">
+                    Every system is designed, built, deployed, and monitored in-house — and traded on our own
+                    capital before anyone else's. That order is deliberate: nothing reaches a client that we
+                    wouldn't run ourselves.
+                </p>
+            </div>
+        </section>
+
+        <!-- Contact -->
+        <section id="contact" class="contact section">
+            <div class="container">
+                <h2 class="section-title">Tell us what you're building</h2>
+                <p class="section-intro">
+                    We license existing systems, build custom ones, and take on infrastructure engineering.
+                    One email reaches us directly — expect a substantive reply, not a sales sequence.
+                </p>
+                <div class="contact-cta">
+                    <a href="mailto:hello@midascode.ai?subject=MidasCode%20inquiry" class="btn btn-primary">Email
+                        hello@midascode.ai</a>
+                    <p class="contact-hint">
+                        Mention what you're after: licensing an existing algorithm, adding AI to your strategy
+                        (signals, filters, trade management), a custom AI-driven system, or quant infrastructure.
+                    </p>
+                    <p class="contact-note">
+                        When we talk, that includes the evidence — live track records and a methodology brief,
+                        shared privately and with context rather than published as marketing. Nothing on this
+                        site is investment advice or an offer to manage funds.
+                    </p>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Features Section -->
-    <section id="features" class="features">
-        <div class="container">
-            <h2 class="section-title">Golden Intelligence Technology</h2>
-            <p class="section-subtitle">The full stack of AI infrastructure, autonomous agents, and intelligent systems
-                that give every trade and investment the Midas touch</p>
-
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <div class="icon-neural"></div>
-                    </div>
-                    <h3 class="feature-title">Autonomous Trading Agents</h3>
-                    <p class="feature-description">
-                        LLM-powered agents that reason, plan, and execute trades end-to-end — no human in the loop.
-                        They read the market, form a thesis, and act on it at machine speed.
-                    </p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <div class="icon-quantum"></div>
-                    </div>
-                    <h3 class="feature-title">Quant Infrastructure</h3>
-                    <p class="feature-description">
-                        Purpose-built quant servers and execution pipelines with sub-millisecond latency —
-                        the institutional-grade foundation that powers everything above it.
-                    </p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <div class="icon-risk"></div>
-                    </div>
-                    <h3 class="feature-title">Adaptive Risk Intelligence</h3>
-                    <p class="feature-description">
-                        AI systems that continuously assess risk in real time, dynamically responding to volatility
-                        and regime shifts to protect capital while staying in the trade.
-                    </p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <div class="icon-multi"></div>
-                    </div>
-                    <h3 class="feature-title">Multi-Market Coverage</h3>
-                    <p class="feature-description">
-                        Stocks, crypto, forex, and commodities — unified under a single agent-managed strategy
-                        layer that applies the Midas touch across every asset class.
-                    </p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <div class="icon-sentiment"></div>
-                    </div>
-                    <h3 class="feature-title">LLM Market Intelligence</h3>
-                    <p class="feature-description">
-                        Large language models that parse earnings calls, news, filings, and social signals at scale —
-                        turning the flood of market information into precise, actionable intelligence.
-                    </p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <div class="icon-portfolio"></div>
-                    </div>
-                    <h3 class="feature-title">Agentic Portfolio Management</h3>
-                    <p class="feature-description">
-                        Autonomous agents that continuously monitor, rebalance, and optimize your portfolio —
-                        running 24/7 so the work of active management never stops.
-                    </p>
-                </div>
+        <!-- Risk disclosure -->
+        <section id="risk" class="risk section">
+            <div class="container">
+                <h2 class="risk-title">Risk disclosure</h2>
+                <p class="risk-body">
+                    Trading foreign exchange, indices, stocks, cryptocurrencies, commodities, and other
+                    instruments carries substantial risk of loss and is not suitable for everyone. Past
+                    performance — including any track record we share privately — is not indicative of future
+                    results. Nothing on this site is investment advice or an offer to manage funds; MidasCode
+                    builds and operates trading technology.
+                </p>
             </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="contact">
-        <div class="container">
-            <div class="contact-content-centered">
-                <div class="contact-info">
-                    <h2 class="section-title">Ready to Touch Gold?</h2>
-                    <p class="contact-description">
-                        Join the builders of next-generation AI trading infrastructure. Whether you're looking to
-                        deploy autonomous agents, integrate quant systems, or explore what's possible —
-                        we'd love to talk.
-                    </p>
-                    <div class="contact-methods">
-                        <div class="contact-method-primary">
-                            <div class="contact-icon-large">📧</div>
-                            <div class="contact-details-primary">
-                                <span class="contact-label-large">Let's Build Something Golden Together</span>
-                                <span class="contact-value-large">hello@midascode.ai</span>
-                                <span class="contact-subtitle">We typically respond within 24 hours</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="contact-cta">
-                        <a href="mailto:hello@midascode.ai" class="btn btn-primary">Get in Touch</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="footer-content-simple">
+            <div class="footer-content">
                 <div class="footer-brand">
                     <div class="footer-logo">
                         <span class="logo-text">MidasCode</span><span class="logo-ai">.AI</span>
                     </div>
-                    <p class="footer-tagline">Where every touch turns to gold</p>
-                    <p class="footer-description">
-                        Building the infrastructure layer for AI-driven markets.
-                        Get in touch to learn more about our autonomous trading systems and quant solutions.
-                    </p>
+                    <p class="footer-tagline">Trading systems and quant infrastructure — rules-based, hybrid, and
+                        AI-native.</p>
                 </div>
-                <div class="footer-contact">
-                    <h4 class="footer-title">Get Started</h4>
-                    <div class="footer-contact-info">
-                        <p class="footer-email">
-                            <span class="contact-icon">📧</span>
-                            <a href="mailto:hello@midascode.ai" class="footer-link">hello@midascode.ai</a>
-                        </p>
-                        <p class="footer-response">
-                            <span class="contact-icon">⚡</span>
-                            <span class="footer-response-text">Fast response guaranteed</span>
-                        </p>
-                    </div>
-                </div>
+                <nav class="footer-nav" aria-label="Footer">
+                    <a href="#systems" class="footer-link">What We Build</a>
+                    <a href="#validation" class="footer-link">Validation</a>
+                    <a href="#about" class="footer-link">About</a>
+                    <a href="#risk" class="footer-link">Risk Disclosure</a>
+                    <a href="mailto:hello@midascode.ai" class="footer-link">hello@midascode.ai</a>
+                </nav>
             </div>
             <div class="footer-bottom">
-                <p class="footer-copyright">© 2025 MidasCode.AI. All rights reserved. Trading involves risk.</p>
+                <p class="footer-copyright">© <span id="copyright-year"></span> MidasCode.AI. All rights reserved.</p>
             </div>
         </div>
     </footer>
