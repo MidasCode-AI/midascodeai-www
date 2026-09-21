@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Compounding Bench — MidasCode.AI</title>
+    <meta name="description" content="A compound-interest bench: starting amount, contributions, raises, inflation and profit withdrawals, with a year-by-year schedule and no caps on any input.">
+    <link rel="canonical" href="https://midascode.ai/compounding-bench/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://midascode.ai/compounding-bench/">
+    <meta property="og:title" content="Compounding Bench — MidasCode.AI">
+    <meta property="og:description" content="A compound-interest bench: starting amount, contributions, raises, inflation and profit withdrawals, with a year-by-year schedule and no caps on any input.">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Compounding Bench — MidasCode.AI">
+    <meta name="twitter:description" content="A compound-interest bench: starting amount, contributions, raises, inflation and profit withdrawals, with a year-by-year schedule and no caps on any input.">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <!-- B612 / B612 Mono self-hosted: no third-party request, no visitor IP sent off-site.
+         SIL Open Font License 1.1 - see fonts/OFL.txt -->
+    <link rel="preload" href="fonts/b612-400.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="fonts/b612mono-400.woff2" as="font" type="font/woff2" crossorigin>
+    <style>
+@font-face{font-family:'B612';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/b612-400.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'B612';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/b612-700.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'B612 Mono';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/b612mono-400.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'B612 Mono';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/b612mono-700.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+    </style>
+    <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+</head>
+
+<body>
+
+<style>
+:root{
+  --ground:#E6EAEC; --surface:#FAFBFB; --inset:#E3EAE3;
+  --ink:#0F1417; --ink-muted:#515D63;
+  --hairline:#AFBAC1; --hairline-strong:#93A0A7;
+  --needle:#BF2E1B; --rail-fill:#C3CDD2;
+  --band-principal:#9FAFB9; --band-contrib:#256F64; --band-interest:#C9992F;
+  --loss:#BF2E1B;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#121A1E; --surface:#1A2329; --inset:#1F2A28;
+    --ink:#E8EEF0; --ink-muted:#97A6AD;
+    --hairline:#3B4A52; --hairline-strong:#66777F;
+    --needle:#FF6A4D; --rail-fill:#33444C;
+    --band-principal:#4A6472; --band-contrib:#3FA292; --band-interest:#F2C97A;
+    --loss:#FF6A4D;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#121A1E; --surface:#1A2329; --inset:#1F2A28;
+  --ink:#E8EEF0; --ink-muted:#97A6AD;
+  --hairline:#3B4A52; --hairline-strong:#66777F;
+  --needle:#FF6A4D; --rail-fill:#33444C;
+  --band-principal:#4A6472; --band-contrib:#3FA292; --band-interest:#F2C97A;
+  --loss:#FF6A4D;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:'B612','Helvetica Neue',Arial,sans-serif;
+  font-size:13px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums;
+}
+.mono{font-family:'B612 Mono','SFMono-Regular',Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.fig{font-family:'B612','Helvetica Neue',Arial,sans-serif;font-variant-numeric:tabular-nums lining-nums}
+.cap{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);font-weight:700}
+:focus-visible{outline:2px solid var(--needle);outline-offset:2px}
+
+/* ---------- nameplate ---------- */
+.nameplate{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  min-height:44px;padding:8px 18px;background:var(--surface);
+  border-bottom:1px solid var(--hairline-strong);flex-wrap:wrap;
+}
+.nameplate .serial{display:flex;align-items:center;gap:10px;min-width:0}
+.nameplate h1{margin:0;font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--ink);white-space:nowrap}
+.serial-rule{flex:0 0 44px;height:1px;background:var(--hairline)}
+.stamp{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.themesel{display:flex;border:1px solid var(--hairline-strong);flex:0 0 auto}
+.themesel button{
+  font:inherit;font-size:10px;letter-spacing:.1em;font-weight:700;
+  background:var(--surface);color:var(--ink-muted);border:0;
+  border-left:1px solid var(--hairline);padding:5px 8px;cursor:pointer;
+  font-family:'B612 Mono',Menlo,monospace;
+}
+.themesel button:first-child{border-left:0}
+.themesel button[aria-pressed="true"]{background:var(--inset);color:var(--ink);box-shadow:inset 0 -2px 0 var(--needle)}
+
+/* ---------- readout deck ---------- */
+.deck{display:grid;grid-template-columns:minmax(280px,1fr) minmax(320px,auto);background:var(--surface);border-bottom:1px solid var(--hairline-strong)}
+.headline{padding:16px 18px 14px;border-right:1px solid var(--hairline);min-width:0}
+.headline .figure{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px;margin-top:2px;min-width:0}
+.headline .whole{font-size:56px;line-height:1.05;font-weight:700;letter-spacing:-.02em;overflow-wrap:anywhere;min-width:0}
+.headline .whole.long{font-size:40px}
+.headline .whole.longer{font-size:28px;letter-spacing:0}
+.headline .cents{font-size:21px;line-height:1;color:var(--ink-muted);font-weight:400}
+.caliper{display:flex;align-items:center;margin-top:8px;height:9px}
+.caliper .tick{width:1px;height:9px;background:var(--hairline-strong)}
+.caliper .bar{flex:1;height:1px;background:var(--hairline-strong)}
+.headline .sub{margin-top:7px;font-size:11px;color:var(--ink-muted);letter-spacing:.06em;text-transform:uppercase;overflow-wrap:anywhere}
+
+.gauges{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.gauge{padding:13px 14px;border-left:1px solid var(--hairline);display:flex;flex-direction:column;gap:5px;min-width:0}
+.gauge:first-child{border-left:0}
+.gauge .val{font-size:21px;line-height:1.15;font-weight:700;overflow-wrap:anywhere}
+.gauge .val.none{color:var(--ink-muted);font-weight:400}
+.gauge .note{font-size:10px;letter-spacing:.05em;color:var(--ink-muted);text-transform:uppercase;line-height:1.35;overflow-wrap:anywhere}
+
+/* ---------- body grid ---------- */
+.bench{display:grid;grid-template-columns:340px minmax(0,1fr);align-items:start}
+.deckpanel{
+  background:var(--surface);border-right:1px solid var(--hairline-strong);
+  position:sticky;top:0;max-height:100vh;overflow-y:auto;overscroll-behavior:contain;
+}
+.deckpanel::-webkit-scrollbar{width:9px}
+.deckpanel::-webkit-scrollbar-thumb{background:var(--hairline);border:3px solid var(--surface)}
+.deck-head{
+  display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+  padding:9px 16px;border-bottom:1px solid var(--hairline-strong);
+  position:sticky;top:0;background:var(--surface);z-index:3;
+}
+.deck-head button{font-family:'B612 Mono',Menlo,monospace;font-size:10px;letter-spacing:.09em;text-transform:uppercase;background:none;border:0;border-bottom:1px solid var(--hairline);color:var(--ink-muted);cursor:pointer;padding:0 0 1px}
+.deck-note{margin:0;padding:7px 16px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-muted);border-bottom:1px solid var(--hairline);line-height:1.45}
+.channels{display:flex;flex-direction:column}
+
+/* ---------- rail channel ---------- */
+.ch{padding:11px 16px 13px;border-bottom:1px solid var(--hairline)}
+.ch.off{opacity:.42}
+.ch-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.ch-top label{cursor:pointer}
+.ch-val{display:flex;align-items:baseline;gap:3px;min-width:0}
+.ch-val .pre,.ch-val .post{font-size:11px;color:var(--ink-muted);font-family:'B612 Mono',Menlo,monospace}
+.ch input.num{
+  font-family:'B612','Helvetica Neue',Arial,sans-serif;font-size:15px;font-weight:700;
+  background:transparent;color:var(--ink);border:0;border-bottom:1px solid var(--hairline);
+  padding:0 1px 1px;text-align:right;width:11ch;min-width:0;font-variant-numeric:tabular-nums;
+}
+.ch input.num:hover{border-bottom-color:var(--hairline-strong)}
+.ch input.num:focus{outline:0;border-bottom:1px solid var(--needle)}
+.ch.bad input.num{border-bottom-color:var(--needle)}
+.seg-inline{margin-top:8px}
+.ch-eff{margin-top:6px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted);font-family:'B612 Mono',Menlo,monospace;overflow-wrap:anywhere}
+.ch-err{margin:7px 0 0;font-size:11px;line-height:1.45;color:var(--needle)}
+
+.rail{position:relative;margin-top:6px}
+.rail input[type=range]{-webkit-appearance:none;appearance:none;display:block;width:100%;height:30px;background:transparent;cursor:pointer;margin:0;padding:0}
+.rail input[type=range]::-webkit-slider-runnable-track{height:6px;border:1px solid var(--hairline);background:linear-gradient(90deg,var(--rail-fill) 0 var(--pct,0%),var(--inset) var(--pct,0%))}
+.rail input[type=range]::-moz-range-track{height:6px;border:1px solid var(--hairline);background:linear-gradient(90deg,var(--rail-fill) 0 var(--pct,0%),var(--inset) var(--pct,0%))}
+.rail input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:22px;margin-top:-9px;border:1px solid var(--needle);background:repeating-linear-gradient(90deg,var(--hairline-strong) 0 1px,var(--surface) 1px 3px)}
+.rail input[type=range]::-moz-range-thumb{width:13px;height:20px;border:1px solid var(--needle);border-radius:0;background:repeating-linear-gradient(90deg,var(--hairline-strong) 0 1px,var(--surface) 1px 3px)}
+.rail input[type=range]:focus-visible{outline:0}
+.rail input[type=range]:focus-visible::-webkit-slider-thumb{outline:2px solid var(--needle);outline-offset:2px}
+.rail input[type=range]:focus-visible::-moz-range-thumb{outline:2px solid var(--needle);outline-offset:2px}
+.ladder{position:relative;height:13px;margin-top:-2px}
+.ladder .t{position:absolute;top:0;width:1px;height:4px;background:var(--hairline-strong);transform:translateX(-.5px)}
+.ladder .l{position:absolute;top:5px;font-size:9px;letter-spacing:.06em;color:var(--ink-muted);transform:translateX(-50%);white-space:nowrap;font-family:'B612 Mono',Menlo,monospace}
+.ladder .l.first{transform:none;left:0}
+.ladder .l.last{transform:translateX(-100%)}
+
+/* ---------- segmented ---------- */
+.seg-wrap{padding:11px 16px 13px;border-bottom:1px solid var(--hairline)}
+.seg{display:flex;border:1px solid var(--hairline-strong);margin-top:6px;flex-wrap:wrap}
+.seg .opt{flex:1 1 0;min-width:46px;position:relative;border-left:1px solid var(--hairline)}
+.seg .opt:first-child{border-left:0}
+.seg input{position:absolute;opacity:0;width:100%;height:100%;left:0;top:0;margin:0;cursor:pointer}
+.seg span{display:block;text-align:center;padding:6px 3px;font-family:'B612 Mono',Menlo,monospace;font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-muted);background:var(--surface)}
+.seg input:checked + span{background:var(--inset);color:var(--ink);font-weight:700;box-shadow:inset 0 -2px 0 var(--needle)}
+.seg input:focus-visible + span{outline:2px solid var(--needle);outline-offset:-2px}
+
+/* ---------- work area ---------- */
+.work{min-width:0;display:flex;flex-direction:column}
+.plate{background:var(--surface);border-bottom:1px solid var(--hairline-strong);position:relative}
+.plate-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:9px 16px;border-bottom:1px solid var(--hairline)}
+.plate-head .legend{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.lg{display:flex;align-items:center;gap:5px;font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-muted)}
+.lg i{width:9px;height:9px;display:block;border:1px solid var(--hairline-strong)}
+.toggle{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-muted);font-family:'B612 Mono',Menlo,monospace}
+.toggle input{accent-color:var(--needle);width:12px;height:12px;margin:0}
+.plot-wrap{position:relative;cursor:crosshair}
+.plot-wrap svg{display:block;width:100%}
+.readout{
+  position:absolute;top:12px;right:16px;border:1px solid var(--hairline-strong);background:var(--surface);
+  padding:7px 9px;display:grid;grid-template-columns:auto auto;gap:2px 12px;
+  font-family:'B612 Mono',Menlo,monospace;font-size:11px;pointer-events:none;max-width:calc(100% - 96px);
+}
+.readout dt{color:var(--ink-muted);letter-spacing:.07em;text-transform:uppercase}
+.readout dd{margin:0;text-align:right;font-weight:700;overflow-wrap:anywhere}
+.readout .chip{display:inline-block;width:7px;height:7px;margin-right:5px;border:1px solid var(--hairline-strong)}
+.narrate{margin:0;padding:12px 16px;font-size:15px;line-height:1.5;max-width:66ch;border-bottom:1px solid var(--hairline);background:var(--surface);overflow-wrap:anywhere}
+.narrate b{font-weight:700}
+
+/* ---------- schedule ---------- */
+.sched{background:var(--surface)}
+.sched-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:9px 16px;border-bottom:1px solid var(--hairline)}
+.formula{margin:0;padding:8px 16px;font-size:12px;line-height:1.5;color:var(--ink);background:var(--inset);border-bottom:1px solid var(--hairline)}
+tbody tr.yend td,tbody tr.yend th{border-bottom:1px solid var(--hairline-strong)}
+.pager{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:7px 16px;border-bottom:1px solid var(--hairline);font-family:'B612 Mono',Menlo,monospace;font-size:11px}
+.pager button{font:inherit;font-size:10px;letter-spacing:.09em;text-transform:uppercase;background:var(--surface);color:var(--ink);border:1px solid var(--hairline-strong);padding:4px 9px;cursor:pointer}
+.pager button:disabled{color:var(--ink-muted);border-color:var(--hairline);cursor:default}
+.pager label{display:flex;align-items:center;gap:6px;color:var(--ink-muted);font-size:10px;letter-spacing:.09em;text-transform:uppercase}
+.pager input{font:inherit;font-size:12px;width:16ch;background:transparent;color:var(--ink);border:0;border-bottom:1px solid var(--hairline);padding:1px 2px}
+.pager input:focus{outline:0;border-bottom-color:var(--needle)}
+#pg-range{color:var(--ink)}
+.tscroll{overflow-x:auto;max-height:480px;overflow-y:auto;border-bottom:1px solid var(--hairline-strong)}
+table{border-collapse:collapse;width:100%;font-family:'B612 Mono',Menlo,monospace;font-size:12px;font-variant-numeric:tabular-nums}
+caption{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+thead th{position:sticky;top:0;z-index:2;background:var(--surface);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);font-weight:700;text-align:right;padding:7px 10px;white-space:nowrap;border-bottom:1px solid var(--hairline-strong)}
+thead th:first-child{text-align:left;left:0;z-index:3}
+tbody td{padding:4px 10px;text-align:right;white-space:nowrap;border-bottom:1px solid transparent}
+tbody th{padding:4px 10px;text-align:left;font-weight:400;font-size:12px;position:sticky;left:0;background:inherit}
+tbody tr{background:var(--surface)}
+tbody tr:nth-child(6n+1),tbody tr:nth-child(6n+2),tbody tr:nth-child(6n+3){background:var(--inset)}
+tbody tr.mark,tbody tr.pin{box-shadow:inset 2px 0 0 var(--needle),inset -2px 0 0 var(--needle)}
+tbody tr.pin th,tbody tr.pin td{font-weight:700}
+tbody tr.cross td,tbody tr.cross th{border-bottom:1px dashed var(--needle)}
+tbody tr th:first-child::after{content:"";position:absolute;right:0;top:0;bottom:0;width:1px;background:var(--hairline)}
+td.neg{color:var(--loss)}
+.sticky-note{margin:0;padding:8px 16px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-muted)}
+
+/* ---------- footer ---------- */
+footer{padding:18px;border-top:1px solid var(--hairline-strong);background:var(--ground)}
+.method{max-width:66ch;font-size:12px;line-height:1.65;color:var(--ink-muted)}
+.method h2{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);margin:0 0 7px}
+.method p{margin:0 0 9px}
+.method code{font-family:'B612 Mono',Menlo,monospace;color:var(--ink);font-size:11.5px}
+
+
+/* ---------- midascode.ai site chrome ---------- */
+.method .disclaimer{
+  margin:16px 0 0;padding:12px 14px;background:var(--surface);
+  border:1px solid var(--hairline-strong);border-left:3px solid var(--needle);
+}
+.method .disclaimer h3{margin:0 0 6px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink)}
+.method .disclaimer p{margin:0;color:var(--ink)}
+.nameplate .home{
+  font-family:'B612 Mono',Menlo,monospace;font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;font-weight:700;color:var(--ink-muted);
+  text-decoration:none;white-space:nowrap;border-bottom:1px solid transparent;
+}
+.nameplate .home:hover,.nameplate .home:focus-visible{color:var(--ink);border-bottom-color:var(--needle)}
+.nameplate .home b{font-weight:700;color:var(--needle)}
+.method .back{margin:14px 0 0;padding-top:12px;border-top:1px solid var(--hairline)}
+.method .back a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--hairline)}
+.method .back a:hover,.method .back a:focus-visible{border-bottom-color:var(--needle)}
+
+@media (max-width:1080px){
+  .bench{grid-template-columns:1fr}
+  .deckpanel{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--hairline-strong)}
+  .channels{display:grid;grid-template-columns:1fr 1fr}
+  .ch,.seg-wrap{border-right:1px solid var(--hairline)}
+  .deck{grid-template-columns:1fr}
+  .headline{border-right:0;border-bottom:1px solid var(--hairline)}
+}
+@media (max-width:700px){
+  .channels{grid-template-columns:1fr}
+  .gauges{grid-template-columns:1fr 1fr}
+  .gauge:nth-child(3),.gauge:nth-child(4){border-top:1px solid var(--hairline)}
+  .gauge:nth-child(3){border-left:0}
+  .headline .whole{font-size:38px}
+  .headline .whole.long{font-size:30px}
+  .headline .whole.longer{font-size:22px}
+  .headline .cents{font-size:16px}
+  .readout{position:static;margin:10px 16px 0;display:inline-grid;max-width:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="nameplate">
+  <div class="serial">
+    <a class="home" href="/">MidasCode<b>.AI</b></a><span class="serial-rule"></span>
+    <h1>Compounding Bench</h1><span class="serial-rule"></span>
+    <span class="mono cap" style="letter-spacing:.1em">CI&#8209;72</span>
+  </div>
+  <span class="stamp mono" id="scenario-stamp"></span>
+  <div class="themesel" role="group" aria-label="Theme">
+    <button type="button" data-theme-set="light" aria-pressed="false">LT</button>
+    <button type="button" data-theme-set="system" aria-pressed="true">SYS</button>
+    <button type="button" data-theme-set="dark" aria-pressed="false">DK</button>
+  </div>
+</div>
+
+<div class="deck">
+  <div class="headline">
+    <div class="cap">Balance at end of term</div>
+    <div class="figure"><span class="whole fig" id="hl-whole">$0</span><span class="cents fig" id="hl-cents">.00</span></div>
+    <div class="caliper"><span class="tick"></span><span class="bar"></span><span class="tick"></span></div>
+    <div class="sub mono" id="hl-sub"></div>
+  </div>
+  <div class="gauges">
+    <div class="gauge"><span class="cap">Effective yield</span><span class="val fig" id="g-apy">—</span><span class="note" id="g-apy-note"></span></div>
+    <div class="gauge"><span class="cap">Today&rsquo;s money</span><span class="val fig" id="g-real">—</span><span class="note" id="g-real-note"></span></div>
+    <div class="gauge"><span class="cap">Lump sum doubles in</span><span class="val fig" id="g-dbl">—</span><span class="note" id="g-dbl-note"></span></div>
+    <div class="gauge"><span class="cap">Crossover year</span><span class="val fig" id="g-cross">—</span><span class="note" id="g-cross-note"></span></div>
+  </div>
+</div>
+
+<div class="bench">
+  <div class="deckpanel">
+    <div class="deck-head"><span class="cap">Control deck</span><button type="button" id="reset">Reset</button></div>
+    <p class="deck-note">No caps. Type any value and the rail re&#8209;ranges around it &mdash; 2.5m, 1e12 and &minus;40 all work.</p>
+    <div class="channels" id="channels"></div>
+  </div>
+
+  <div class="work">
+    <div class="plate">
+      <div class="plate-head">
+        <div class="legend" id="legend"></div>
+        <label class="toggle"><input type="checkbox" id="chord"> Show even&#8209;pace line</label>
+      </div>
+      <div class="plot-wrap" id="plot-wrap">
+        <svg id="plot" role="img" aria-label="Stacked area chart of balance over time"></svg>
+        <dl class="readout" id="readout"></dl>
+      </div>
+    </div>
+    <p class="narrate" id="narrate"></p>
+    <div class="sched">
+      <div class="sched-head">
+        <span class="cap" id="sched-title">Schedule</span>
+        <div class="themesel" id="rowsel" role="group" aria-label="Schedule rows">
+          <button type="button" data-rows="period" aria-pressed="true">Per month</button>
+          <button type="button" data-rows="year" aria-pressed="false">Per year</button>
+        </div>
+        <label class="toggle"><input type="checkbox" id="allcols"> <span id="allcols-lab">Show all 11 columns</span></label>
+      </div>
+      <p class="formula" id="sched-formula"></p>
+      <div class="pager" id="pager" hidden>
+        <button type="button" id="pg-prev">&lsaquo; Earlier</button>
+        <span id="pg-range"></span>
+        <button type="button" id="pg-next">Later &rsaquo;</button>
+        <label>Go to year <input id="pg-go" type="text" inputmode="numeric" autocomplete="off" spellcheck="false"></label>
+      </div>
+      <div class="tscroll"><table id="sched"><caption>Year by year balance, contributions and interest</caption><thead></thead><tbody></tbody></table></div>
+      <p class="sticky-note" id="sched-note"></p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="method">
+    <h2>Method</h2>
+    <p>The rate covers the period you pick beside it (per year, quarter, month or day), and &ldquo;interest added to balance&rdquo; is how often the earned interest joins the balance and starts earning too. Picking a rate period sets the adding schedule to match; change it separately for quotes like &ldquo;7% a year, added monthly&rdquo;, where each monthly addition is 7% &divide; 12. The effective annual yield is <code>(1 + r/n)^n &minus; 1</code> for discrete compounding and <code>e^r &minus; 1</code> for continuous. Contributions are grown at the equivalent periodic rate <code>(1 + EAR)^(1/p) &minus; 1</code>, so the yield is the same however often the account compounds. Where compounding is less frequent than contributions, this is a smooth approximation of a stepped credit &mdash; it will not tie out to a passbook that posts interest once a year.</p>
+    <p>Contributions change on each anniversary, so year one pays the amount you set and year <i>t</i> pays that amount stepped <i>t</i>&minus;1 times; a negative raise shrinks payments and &minus;100% stops them after year one. Doubling time is for the starting amount alone and ignores contributions; the Rule of 72 estimate sits beside the exact solve. Crossover is the first year where interest earned to date exceeds everything put in to date, starting amount included, once more than zero has gone in.</p>
+    <p>Withdrawals take a share of the profit &mdash; the growth since the previous withdrawal, contributions not counted &mdash; at the end of each month, quarter or year, and only when that profit is positive. What comes out stops compounding, so the chart stacks it as a hatched band above the balance. The account is simulated period by period at the finer of the contribution and withdrawal schedules; for terms past the simulated span, the last simulated year is raised to the remaining power.</p>
+    <p>There are no caps. Every year of any term comes from a closed form rather than a step-by-step loop, so a million-year term costs no more than a thirty-year one, and the schedule pages through every year of it. Figures past a 64-bit float&rsquo;s range (about 1.8&thinsp;&times;&thinsp;10<sup>308</sup>) are carried as logarithms and shown in scientific notation, with only as many mantissa digits as the logarithm can vouch for. Crossover is found exactly across the first 10,000 years, then bracketed on a fine grid and bisected to the exact year. The only inputs refused are the ones with no arithmetic answer: a compounding period whose rate is &minus;100% or lower (so the bound moves with frequency, and continuous compounding has none), inflation at or below &minus;100%, and a term that is negative, fractional, or longer than a 64-bit number can count in whole years.</p>
+    <div class="disclaimer">
+      <h3>Not advice, and not a projection of any real account</h3>
+      <p>These figures are fixed&#8209;rate arithmetic, not a forecast. Real returns vary year to year and can be negative; taxes, fees, spreads and slippage are not modelled, and no rate shown here is one MidasCode.AI offers, quotes or has achieved. Trading and investing carry substantial risk of loss and are not suitable for everyone. Past performance is not indicative of future results. Nothing on this page is investment advice, a solicitation, or an offer to manage funds — MidasCode.AI builds and operates trading technology.</p>
+    </div>
+    <p class="back">A tool from <a href="/">MidasCode.AI</a> — trading systems and quant infrastructure. See the full <a href="/#risk">risk disclosure</a>.</p>
+  </div>
+</footer>
+
+<script>
+/* ===== Compounding engine v2 — pure, no DOM =====
+   Accepts any finite input and refuses only what arithmetic can't answer.
+
+   Model:  A = (1 + r/n)^n  or  e^r        f = A^(1/p)  per contribution period
+           each period: start  b = (b + pay)·f      end  b = b·f + pay;   paid += pay
+           after a year's p-th payment: pay ·= (1 + g)
+   Three regimes, each used only where it is accurate:
+   1. Float range, with contributions: the literal period recurrence above, checkpointed every
+      CK years. It never forms two huge terms that cancel, so plans that hold a balance steady
+      stay exact, and the crossover is scanned year by year rather than sampled.
+   2. Past the recurrence (no contributions, very long terms, or float overflow): closed forms.
+      In log space every sum is taken at a common scale e^((y−1)·hi) so exponent rounding can't
+      flip a sign, and interest, yearly interest and yearly payments come from forms that never
+      subtract two near-equal logarithms.
+   3. Crossover past the scan: on each parity class of years, bal − 2·moneyIn has a slope that
+      changes sign at most once, so each monotone piece is bisected exactly. */
+var ENGINE = (function(){
+  "use strict";
+  var ZERO={s:0,l:-Infinity}, ONE={s:1,l:0}, EPS=Math.pow(2,-52);
+  var CK=256, PERIOD_BUDGET=6e6, SCAN=10000, MI_EXACT_CAP=2000, MI_EXACT_BITS=65536;
+
+  /* ---------- signed log-magnitude arithmetic: value = s·e^l ---------- */
+  function norm(s,l){ return (s===0||l===-Infinity)?ZERO:{s:s,l:l}; }
+  function lg(x){ return x===0?ZERO:{s:x<0?-1:1,l:Math.log(Math.abs(x))}; }
+  function ladd(a,b){
+    if(a.s===0) return b;
+    if(b.s===0) return a;
+    if(b.l>a.l){ var t=a; a=b; b=t; }
+    if(a.l===Infinity) return a;               // the log itself overflowed; ∞ − ∞ must not become NaN
+    var d=b.l-a.l;
+    if(a.s===b.s) return norm(a.s,a.l+Math.log1p(Math.exp(d)));
+    if(d===0) return ZERO;
+    return norm(a.s,a.l+Math.log(-Math.expm1(d)));
+  }
+  function lsub(a,b){ return ladd(a,{s:-b.s,l:b.l}); }
+  function lmul(a,b){ return (a.s===0||b.s===0)?ZERO:norm(a.s*b.s,a.l+b.l); }
+  function ldiv(a,b){ return a.s===0?ZERO:norm(a.s*b.s,a.l-b.l); }
+  function lok(a){ return a.s===0||isFinite(a.l); }
+  function lem(x){ return x>0?x+Math.log(-Math.expm1(-x)):Math.log(-Math.expm1(x)); }   // ln|e^x − 1|
+  function sgn(x){ return x>0?1:(x<0?-1:0); }
+  function toQf(a){ return a===0?{v:0,s:0,l:-Infinity}:{v:a,s:a<0?-1:1,l:Math.log(Math.abs(a))}; }
+  function toQl(a){ var v=a.s===0?0:a.s*Math.exp(a.l); return {v:isFinite(v)?v:null,s:a.s,l:a.l}; }
+
+  /* ---------- closed-form pieces ---------- */
+  // (A^y − G^y)/(A − G): symmetric in A and G, tends to y·A^(y−1) as A → G.
+  function AFf(lnA,g,y){
+    if(y===0) return 0;
+    if(g>-1){
+      var lnG=Math.log1p(g), hi=Math.max(lnA,lnG), d=Math.abs(lnA-lnG);
+      return Math.exp((y-1)*hi)*(d===0?y:Math.expm1(-y*d)/Math.expm1(-d));
+    }
+    var G=1+g;
+    return (Math.exp(y*lnA)-Math.pow(G,y))/(Math.exp(lnA)-G);
+  }
+  function spowl(G,y){ if(y===0) return ONE; if(G===0) return ZERO; return norm((G<0&&y%2===1)?-1:1,y*Math.log(Math.abs(G))); }
+  function AFl(lnA,g,y){
+    if(y===0) return ZERO;
+    if(g>-1){
+      var lnG=Math.log1p(g), hi=Math.max(lnA,lnG), d=Math.abs(lnA-lnG);
+      return norm(1,(y-1)*hi+Math.log(d===0?y:Math.expm1(-y*d)/Math.expm1(-d)));
+    }
+    var G=1+g;
+    return ldiv(lsub(norm(1,y*lnA),spowl(G,y)),lsub(norm(1,lnA),lg(G)));
+  }
+  function gpowf(g,e){ if(e===0) return 1; return g>-1?Math.exp(e*Math.log1p(g)):Math.pow(1+g,e); }
+  function gpowl(g,e){ if(e===0) return ONE; return g>-1?norm(1,e*Math.log1p(g)):spowl(1+g,e); }
+
+  // Per-contribution-period rate from the inputs themselves. 1 + i would round a tiny rate away,
+  // and stepping (1+x)^k − 1 keeps exact inputs exact.
+  function perPeriodRate(S,p,base){
+    if(S.n==='cont') return Math.expm1(S.rate/p);
+    var x=S.rate/S.n, k=S.n/p;
+    if(x<-0.5) return Math.pow(base,k)-1;
+    if(Number.isInteger(k)){ var i=x; for(var j=1;j<k;j++) i=i+x+i*x; return i; }
+    return Math.expm1(k*Math.log1p(x));
+  }
+  function prepare(S){
+    var errors=[], lnA=null, lnQ=null, base=1;
+    if(!Number.isFinite(S.years)||S.years<0) errors.push({k:'years',code:'negative-term'});
+    else if(!Number.isInteger(S.years)) errors.push({k:'years',code:'term-not-whole'});
+    else if(!Number.isSafeInteger(S.years)) errors.push({k:'years',code:'term-too-long-to-count'});
+    if(S.n==='cont') lnA=S.rate;
+    else {
+      var x=S.rate/S.n;
+      if(x>-1){
+        if(x<-0.5){ lnA=S.n*(Math.log(S.n+S.rate)-Math.log(S.n)); base=(S.n+S.rate)/S.n; }  // n + rate is exact here
+        else if(x===0){ lnA=S.rate; base=1; }                                             // r/n underflowed
+        else { lnA=S.n*Math.log1p(x); base=1+x; }
+      } else errors.push({k:'rate',code:'period-exceeds-balance',perPeriod:x,n:S.n});
+    }
+    if(S.infl>-1) lnQ=Math.log1p(S.infl);
+    else errors.push({k:'infl',code:'prices-at-or-below-zero'});
+    if(errors.length) return {errors:errors};
+
+    var p=S.p, contrib=p>0&&S.pmt!==0, begin=S.timing==='begin';
+    var lnK=0, lKm=ZERO, iP=0, fP=1, mulStep=false, Kf=0, Kmf=0, EARf=Math.expm1(lnA);
+    if(p>0){
+      var a=lnA/p, j1=begin?p:p-1;
+      lnK=(a===0?Math.log(p):lem(lnA)-lem(a))+(begin?a:0);
+      // K − p = Σ ((1+i)^j − 1): same-signed terms, so yearly interest never needs a subtraction
+      if(a!==0) for(var j=1;j<=j1;j++) lKm=ladd(lKm,{s:a<0?-1:1,l:lem(j*a)});
+      iP=perPeriodRate(S,p,base);
+      if(Math.abs(iP)<0.5){
+        // Near 1 the factor is carried as its rate: b + b·i keeps every digit of a tiny i.
+        var e=0;
+        for(var jj=1;jj<=p;jj++){ e=e+iP+e*iP; if(jj<=j1) Kmf+=e; }
+        EARf=e; Kf=p+Kmf; fP=1+iP;
+      } else {
+        // Far from 1 the factor is carried as itself: 1 + i would round a near-total loss to exactly zero.
+        mulStep=true;
+        fP = S.n==='cont' ? Math.exp(S.rate/p) : (S.rate/S.n<-0.5 ? Math.pow(base,S.n/p) : 1+iP);
+        Kf = (a===0?p:Math.expm1(lnA)/Math.expm1(a))*(begin?Math.exp(a):1);
+        Kmf=Kf-p;
+      }
+    }
+    var SC={
+      P0:S.P0, pmt:S.pmt, p:p, g:S.g, G:1+S.g, t:S.years, contrib:contrib, begin:begin,
+      lnA:lnA, lnQ:lnQ, lnK:lnK, Kf:Kf, Kmf:Kmf, lKm:lKm, iP:iP, fP:fP, mulStep:mulStep,
+      EARf:EARf, lEAR: lnA===0?ZERO:{s:lnA<0?-1:1,l:lem(lnA)}, F:null
+    };
+    wdPrepare(S,SC,base);
+    return {sc:SC};
+  }
+
+  /* ---------- regime 1: checkpointed float recurrence ---------- */
+  function dyad(x){                                   // x = m·2^e exactly
+    if(x===0) return [0n,0];
+    var dv=new DataView(new ArrayBuffer(8)); dv.setFloat64(0,x);
+    var hi=dv.getUint32(0), lo=dv.getUint32(4), ex=(hi>>>20)&0x7ff;
+    var m=(BigInt(hi&0xfffff)<<32n)|BigInt(lo);
+    if(ex===0) ex=1; else m|=(1n<<52n);
+    return [(hi>>>31)?-m:m, ex-1075];
+  }
+  // Exact sign of P0 + pmt·p·Σ_{j<y}(1+g)^j on the inputs' exact binary values; null if too costly.
+  function exactMiSign(sc,y){
+    var ex=sc._ex;
+    if(!ex){
+      var P=dyad(sc.P0), M=dyad(sc.pmt), gd=dyad(sc.g), Gm, s;
+      if(gd[1]>=0){ Gm=(gd[0]<<BigInt(gd[1]))+1n; s=0; } else { s=-gd[1]; Gm=gd[0]+(1n<<BigInt(s)); }
+      ex=sc._ex={P:P,M:M,Gm:Gm,s:s,k:1,T:1n};
+    }
+    if(ex.s*(y-1)>MI_EXACT_BITS) return null;
+    if(ex.k>y){ ex.k=1; ex.T=1n; }
+    while(ex.k<y){ ex.T=ex.T*ex.Gm+(1n<<BigInt(ex.s*ex.k)); ex.k++; }
+    var eP=ex.P[1], eM=ex.M[1]-ex.s*(y-1), L=Math.max(0,-eP,-eM);
+    var X=(ex.P[0]<<BigInt(eP+L))+((ex.M[0]*BigInt(sc.p)*ex.T)<<BigInt(eM+L));
+    return X>0n?1:(X<0n?-1:0);
+  }
+  function crossF(sc,y,b,pd,per){
+    var mi=sc.P0+pd;
+    if(y<=MI_EXACT_CAP){
+      var noise=16*EPS*(1+y*sc.p)*Math.max(Math.abs(sc.P0),Math.abs(pd),Math.abs(per)*sc.p);
+      if(Math.abs(mi)<=noise){
+        var e=exactMiSign(sc,y);
+        if(e!==null){ if(e<=0) return false; if(mi<=0) mi=Number.MIN_VALUE; }
+      }
+    }
+    return mi>0 && (b-mi)-mi>0;
+  }
+  // One year of periods on state {b,cb,pd,cp,per}. Each addition's rounding error is recovered exactly
+  // (TwoSum) and carried, and the carry compounds with the balance, so millions of periods can't drift.
+  function stepYear(sc,st){
+    var p=sc.p, i=sc.iP, f=sc.fP, mul=sc.mulStep, begin=sc.begin;
+    var b=st.b, cb=st.cb, pd=st.pd, cp=st.cp, per=st.per, s, t, z, e, k;
+    for(k=0;k<p;k++){
+      if(begin){ s=b+per; z=s-b; e=(b-(s-z))+(per-z); b=s; cb+=e; }
+      if(mul){ b*=f; cb*=f; }
+      else { t=b*i; s=b+t; z=s-b; e=(b-(s-z))+(t-z); b=s; cb+=e+cb*i; }
+      if(!begin){ s=b+per; z=s-b; e=(b-(s-z))+(per-z); b=s; cb+=e; }
+      s=pd+per; z=s-pd; e=(pd-(s-z))+(per-z); pd=s; cp+=e;
+    }
+    s=b+cb; z=s-b; cb=(b-(s-z))+(cb-z); b=s;
+    s=pd+cp; z=s-pd; cp=(pd-(s-z))+(cp-z); pd=s;
+    st.used=per; st.b=b; st.cb=cb; st.pd=pd; st.cp=cp; st.per=per*sc.G; st.y++;
+  }
+  function buildF(sc){
+    if(sc.F) return sc.F;
+    var F=sc.F={Yf:0,cross:null,ck:[[sc.P0,0,0,0,sc.pmt]],cur:null};
+    if(!sc.contrib) return F;
+    var maxY=Math.min(sc.t,Math.floor(PERIOD_BUDGET/sc.p)), cross=null;
+    var st={y:0,b:sc.P0,cb:0,pd:0,cp:0,per:sc.pmt,used:0};
+    for(var y=1;y<=maxY;y++){
+      stepYear(sc,st);
+      if(!(isFinite(st.b)&&isFinite(st.cb)&&isFinite(st.pd)&&isFinite(st.cp))) break;
+      if(cross===null&&crossF(sc,y,st.b,st.pd,st.used)) cross=y;
+      F.Yf=y;
+      if(y%CK===0) F.ck.push([st.b,st.cb,st.pd,st.cp,st.per]);
+    }
+    F.cross=cross;
+    return F;
+  }
+  function stateAt(sc,y){
+    var F=sc.F, c=F.cur;
+    if(c&&c.y<=y&&y-c.y<CK) var st={y:c.y,b:c.b,cb:c.cb,pd:c.pd,cp:c.cp,per:c.per,used:c.used};
+    else { var j=Math.floor(y/CK), k=F.ck[j]; st={y:j*CK,b:k[0],cb:k[1],pd:k[2],cp:k[3],per:k[4],used:0}; }
+    while(st.y<y) stepYear(sc,st);
+    return st;
+  }
+  function rowF(sc,y){
+    var st=stateAt(sc,y-1), bPrev=st.b+st.cb;
+    stepYear(sc,st);
+    sc.F.cur={y:st.y,b:st.b,cb:st.cb,pd:st.pd,cp:st.cp,per:st.per,used:st.used};
+    var per=st.used, bal=st.b+st.cb, pd=st.pd+st.cp, mi=sc.P0+pd;
+    return {bal:bal,balPrev:bPrev,paid:pd,paidYr:sc.p*per,per:per,moneyIn:mi,interest:bal-mi,
+            intYr:sc.EARf*bPrev+(per===0?0:per*sc.Kmf),real:bal*Math.exp(-y*sc.lnQ)};
+  }
+
+  /* ---------- regime 2: closed forms ---------- */
+  function evalFL(sc,y){
+    var P0=sc.P0, bal=P0*Math.exp(y*sc.lnA), balPrev=P0*Math.exp((y-1)*sc.lnA), paid=0, paidYr=0, per=0;
+    if(sc.contrib){
+      var PK=sc.pmt*sc.Kf;
+      bal+=PK*AFf(sc.lnA,sc.g,y);
+      balPrev+=PK*AFf(sc.lnA,sc.g,y-1);
+      paid=sc.pmt*sc.p*AFf(0,sc.g,y);
+      per=sc.pmt*gpowf(sc.g,y-1); paidYr=sc.p*per;
+    }
+    var mi=P0+paid;
+    return {bal:bal,balPrev:balPrev,paid:paid,paidYr:paidYr,per:per,moneyIn:mi,interest:bal-mi,
+            intYr:sc.EARf*balPrev+(per===0?0:per*sc.Kmf),real:bal*Math.exp(-y*sc.lnQ)};
+  }
+  function lnGof(sc){ var G=1+sc.g; return sc.g>-1?Math.log1p(sc.g):(G===0?-Infinity:Math.log(Math.abs(G))); }
+  function hiOf(sc){ return sc.contrib?Math.max(sc.lnA,lnGof(sc)):sc.lnA; }
+  function grel(sc,m,hi){                              // G^m / e^(m·hi)
+    var G=1+sc.g;
+    if(m===0) return ONE;
+    if(G===0) return ZERO;
+    return norm((G<0&&m%2===1)?-1:1,m*(lnGof(sc)-hi));
+  }
+  function coefAt(sc,j,m,hi){                          // bal(j) / e^(m·hi), j ∈ {m, m+1}
+    var lnA=sc.lnA, up=j-m;
+    var Ar=norm(1,up*lnA+m*(lnA-hi));
+    var c=lmul(lg(sc.P0),Ar);
+    if(j>0&&sc.contrib){
+      var PK={s:sc.pmt<0?-1:1,l:Math.log(Math.abs(sc.pmt))+sc.lnK}, g=sc.g, rel;
+      if(g>-1){
+        var d=Math.abs(lnA-lnGof(sc));
+        rel=norm(1,(up-1)*hi+Math.log(d===0?j:Math.expm1(-j*d)/Math.expm1(-d)));
+      } else {
+        var G=1+g, Gr=up===1?lmul(lg(G),grel(sc,m,hi)):grel(sc,m,hi);
+        rel=ldiv(lsub(Ar,Gr),lsub(norm(1,lnA),lg(G)));
+      }
+      c=ladd(c,lmul(PK,rel));
+    }
+    return c;
+  }
+  function mcoef(sc,y,m,hi){                           // moneyIn(y) / e^(m·hi), y ≥ 1
+    var c=lmul(lg(sc.P0),norm(1,-m*hi));
+    if(sc.contrib){
+      var PP={s:sc.pmt<0?-1:1,l:Math.log(Math.abs(sc.pmt))+Math.log(sc.p)}, g=sc.g, Sx;
+      if(g>-1){
+        var lnG=lnGof(sc), d=Math.abs(lnG);
+        Sx=norm(1,m*(Math.max(0,lnG)-hi)+Math.log(d===0?y:Math.expm1(-y*d)/Math.expm1(-d)));
+      } else {
+        Sx=ldiv(lsub(lmul(lg(1+g),grel(sc,m,hi)),norm(1,-m*hi)),lg(g));
+      }
+      c=ladd(c,lmul(PP,Sx));
+    }
+    return c;
+  }
+  // Interest to date from the yearly transition [I,B,Pay]_y = M·[I,B,Pay]_(y−1),
+  // M = [[1, EAR, K−p],[0, A, K],[0, 0, G]], raised by squaring after dividing out e^lam.
+  // For g ≥ −1 every entry is a sum of same-signed terms, so small interest beside a huge balance survives.
+  function tmul(X,Y){
+    return [lmul(X[0],Y[0]),
+            ladd(lmul(X[0],Y[1]),lmul(X[1],Y[3])),
+            ladd(ladd(lmul(X[0],Y[2]),lmul(X[1],Y[4])),lmul(X[2],Y[5])),
+            lmul(X[3],Y[3]),
+            ladd(lmul(X[3],Y[4]),lmul(X[4],Y[5])),
+            lmul(X[5],Y[5])];
+  }
+  function interestPow(sc,y){
+    var contrib=sc.contrib, lnG=contrib?lnGof(sc):-Infinity, lam=Math.max(0,sc.lnA,lnG);
+    var sh=function(qq){ return lmul(qq,norm(1,-lam)); };
+    var B=[norm(1,-lam), sh(sc.lEAR), contrib?sh(sc.lKm):ZERO,
+           norm(1,sc.lnA-lam), contrib?sh({s:1,l:sc.lnK}):ZERO, contrib?norm(1,lnG-lam):ZERO];
+    var R=[ONE,ZERO,ZERO,ONE,ZERO,ONE], k=y;
+    while(k>0){ if(k%2===1) R=tmul(R,B); k=Math.floor(k/2); if(k>0) B=tmul(B,B); }
+    var c=ladd(lmul(R[1],lg(sc.P0)),contrib?lmul(R[2],lg(sc.pmt)):ZERO);
+    return lmul(c,norm(1,y*lam));
+  }
+  function evalLG(sc,y){
+    var contrib=sc.contrib, P0=lg(sc.P0), paid=ZERO, paidYr=ZERO, per=ZERO, bal, balPrev, interest, intYr;
+    if(contrib) paid=lmul({s:sc.pmt<0?-1:1,l:Math.log(Math.abs(sc.pmt))+Math.log(sc.p)},AFl(0,sc.g,y));
+    if(y===0){ bal=P0; balPrev=P0; interest=ZERO; intYr=ZERO; }
+    else {
+      var hi=hiOf(sc), m=y-1, Fs=norm(1,m*hi);
+      var cb=coefAt(sc,y,m,hi), cbp=coefAt(sc,m,m,hi);
+      bal=lmul(Fs,cb); balPrev=lmul(Fs,cbp);
+      if(contrib){ per=lmul(lg(sc.pmt),gpowl(sc.g,m)); paidYr=lmul(lg(sc.p),per); }
+      var ci=lmul(sc.lEAR,cbp);
+      if(contrib) ci=ladd(ci,lmul(lmul(lg(sc.pmt),grel(sc,m,hi)),sc.lKm));
+      intYr=lmul(Fs,ci);
+      interest=(contrib&&sc.g<-1)?lmul(Fs,lsub(cb,mcoef(sc,y,m,hi))):interestPow(sc,y);
+    }
+    return {bal:bal,balPrev:balPrev,paid:paid,paidYr:paidYr,per:per,moneyIn:ladd(P0,paid),
+            interest:interest,intYr:intYr,real:lmul(bal,norm(1,-y*sc.lnQ))};
+  }
+
+  var FIELDS=['bal','balPrev','paid','paidYr','per','moneyIn','interest','intYr'];
+  function packFL(sc,v,y){
+    for(var i=0;i<FIELDS.length;i++) if(!isFinite(v[FIELDS[i]])) return null;
+    var out={y:y,beyond:false};
+    for(var j=0;j<FIELDS.length;j++) out[FIELDS[j]]=toQf(v[FIELDS[j]]);
+    out.real=(isFinite(v.real)&&(v.real!==0||v.bal===0)) ? toQf(v.real) : toQl(lmul(lg(v.bal),norm(1,-y*sc.lnQ)));
+    return out;
+  }
+  function packLG(v,y){
+    var out={y:y,beyond:false};
+    for(var k in v){ if(!lok(v[k])) out.beyond=true; out[k]=toQl(v[k]); }
+    return out;
+  }
+  function year(sc,y){
+    var F=buildF(sc), v;
+    if(y===0) v={bal:sc.P0,balPrev:sc.P0,paid:0,paidYr:0,per:0,moneyIn:sc.P0,interest:0,intYr:0,real:sc.P0};
+    else if(sc.contrib&&y<=F.Yf) v=rowF(sc,y);
+    else v=evalFL(sc,y);
+    return packFL(sc,v,y)||packLG(evalLG(sc,y),y);
+  }
+
+  /* ---------- regime 3: crossover ---------- */
+  // [sign of money in, sign of bal − 2·money in] from the closed form; common-scale logs when floats can't vouch.
+  function signsAt(sc,y){
+    var P0=sc.P0, t1=P0*Math.exp(y*sc.lnA), bal=t1, paid=0;
+    if(sc.contrib){ bal+=sc.pmt*sc.Kf*AFf(sc.lnA,sc.g,y); paid=sc.pmt*sc.p*AFf(0,sc.g,y); }
+    var mi=P0+paid, dd=(bal-mi)-mi, fin=isFinite(t1)&&isFinite(bal)&&isFinite(mi)&&isFinite(dd);
+    if(fin){
+      var noise=4*EPS*(1+y*Math.abs(sc.lnA))*Math.max(Math.abs(t1),Math.abs(bal-t1),Math.abs(paid));
+      if(Math.abs(dd)>noise) return [sgn(mi),sgn(dd)];
+    }
+    var m=y-1, hi=hiOf(sc), mc=mcoef(sc,y,m,hi), ddl=lsub(lsub(coefAt(sc,y,m,hi),mc),mc);
+    if(lok(mc)&&lok(ddl)) return [mc.s,ddl.s];
+    return fin?[sgn(mi),sgn(dd)]:[0,0];
+  }
+  function crossed(sc,y){
+    var F=buildF(sc);
+    if(y<1) return false;
+    if(sc.contrib&&y<=F.Yf){ var r=rowF(sc,y); return crossF(sc,y,r.bal,r.paid,r.per); }
+    var s=signsAt(sc,y); return s[0]>0&&s[1]>0;
+  }
+  // d/dy of AF on its continuous extension (log form); sigma fixes the parity class when G ≤ 0.
+  function AFd(lnA,g,y,sigma){
+    if(g>-1){
+      var lnG=Math.log1p(g), hi=Math.max(lnA,lnG), d=Math.abs(lnA-lnG), R, Rd;
+      if(d===0){ R=y; Rd=1; }
+      else { var em=Math.expm1(-d); R=Math.expm1(-y*d)/em; Rd=-d*Math.exp(-y*d)/em; }
+      return lmul(norm(1,(y-1)*hi),lg(hi*R+Rd));
+    }
+    var H=-(1+g), tA=ZERO, tH=ZERO;
+    if(lnA!==0) tA=norm(lnA<0?-1:1,Math.log(Math.abs(lnA))+y*lnA);
+    if(H>0&&H!==1){ var lnH=Math.log(H); tH=norm(-sigma*(lnH<0?-1:1),Math.log(Math.abs(lnH))+y*lnH); }
+    return ldiv(ladd(tA,tH),ladd(norm(1,lnA),lg(H)));
+  }
+  function ddSlope(sc,y,sigma){
+    var s=(sc.P0===0||sc.lnA===0)?ZERO
+         :norm((sc.P0<0?-1:1)*(sc.lnA<0?-1:1),Math.log(Math.abs(sc.P0))+Math.log(Math.abs(sc.lnA))+y*sc.lnA);
+    if(sc.contrib){
+      s=ladd(s,lmul(lmul(lg(sc.pmt),{s:1,l:sc.lnK}),AFd(sc.lnA,sc.g,y,sigma)));
+      s=ladd(s,lmul(lmul(lg(-sc.pmt),lg(2*sc.p)),AFd(0,sc.g,y,sigma)));
+    }
+    return (s.l!==s.l)?0:s.s;
+  }
+  function trueRange(f,M){                             // f monotone on 0..M → [first,last] true, or null
+    var p0=f(0), pM=f(M);
+    if(p0&&pM) return [0,M];
+    if(!p0&&!pM) return null;
+    var a=0, b=M;
+    while(b-a>1){ var mid=a+Math.floor((b-a)/2); if(f(mid)===pM) b=mid; else a=mid; }
+    return pM?[b,M]:[0,a];
+  }
+  function solve(sc,lo,t){
+    var best=null, classes;
+    if(sc.contrib&&sc.g<=-1) classes=[[2,1,lo+1+((lo+1)%2)],[2,-1,lo+1+((lo+2)%2)]];
+    else classes=[[1,1,lo+1]];
+    for(var c=0;c<classes.length;c++){
+      var step=classes[c][0], sigma=classes[c][1], start=classes[c][2];
+      var N=Math.floor((t-start)/step); if(N<0) continue;
+      var segs=[[start,N]], s0=ddSlope(sc,start,sigma), s1=ddSlope(sc,start+N*step,sigma);
+      if(s0*s1<0){
+        var a=0, b=N;
+        while(b-a>1){ var mid=a+Math.floor((b-a)/2); if(ddSlope(sc,start+mid*step,sigma)===s0) a=mid; else b=mid; }
+        segs=[[start,a],[start+b*step,N-b]];
+        for(var k=Math.max(0,a-2);k<=Math.min(N,b+2);k++){
+          var yk=start+k*step; if(crossed(sc,yk)){ if(best===null||yk<best) best=yk; break; }
+        }
+      }
+      for(var j=0;j<segs.length;j++){
+        (function(ys,M){
+          var memo=new Map();
+          var sg=function(kk){ var v=memo.get(kk); if(v===undefined){ v=signsAt(sc,ys+kk*step); memo.set(kk,v); } return v; };
+          var r1=trueRange(function(kk){return sg(kk)[0]>0},M); if(r1===null) return;
+          var r2=trueRange(function(kk){return sg(kk)[1]>0},M); if(r2===null) return;
+          var f0=Math.max(r1[0],r2[0]), f1=Math.min(r1[1],r2[1]);
+          if(f0<=f1){ var yy=ys+f0*step; if(best===null||yy<best) best=yy; }
+        })(segs[j][0],segs[j][1]);
+      }
+    }
+    return best;
+  }
+  function crossover(sc){
+    var F=buildF(sc), t=sc.t, lo;
+    if(t<1) return null;
+    if(sc.contrib){
+      if(F.cross!==null) return F.cross;
+      if(F.Yf>=t) return null;
+      lo=F.Yf;
+    } else {
+      var scan=Math.min(t,SCAN);
+      for(var y=1;y<=scan;y++){ var s=signsAt(sc,y); if(s[0]>0&&s[1]>0) return y; }
+      if(t<=SCAN) return null;
+      lo=SCAN;
+    }
+    return solve(sc,lo,t);
+  }
+
+  /* ---------- withdrawals: a share of each interval's profit leaves the account ---------- */
+  // Stepped at the finer of the contribution and withdrawal schedules. Profit is the growth since the last withdrawal
+  // (contributions don't count); share·profit comes out when that profit is positive, and stops compounding.
+  // State sits in three binary-scaled domains so the balance, interest/withdrawals and contributions can each be any size:
+  //   B: b      I: I (interest to date), pr (profit since last withdrawal), iy      W: W (withdrawn to date), wy      F: pay, P
+  var WD_STEP_BUDGET=3e6, WD_YEAR_BUDGET=1e6, LN2=Math.LN2, HI=1e150, LO=1e-150, P1000=Math.pow(2,1000), N1000=Math.pow(2,-1000);
+  function mul2(x,e){
+    if(x===0||e===0) return x;
+    if(e>2200) return x*Infinity;
+    if(e<-2200) return x*0;
+    while(e>1000){ x*=P1000; e-=1000; }
+    while(e<-1000){ x*=N1000; e+=1000; }
+    return x*Math.pow(2,e);
+  }
+  function wdPrepare(S,sc,base){
+    var w=+S.wdFreq||0, X=+S.wd||0;
+    sc.wd = w>0 && X!==0 && isFinite(X);
+    if(!sc.wd) return;
+    var s=Math.max(sc.p,w);
+    sc.X=X; sc.w=w; sc.ws=s; sc.cEvery=sc.p>0?s/sc.p:1; sc.wEvery=s/w;
+    sc.lnfs=sc.lnA/s; sc.big=Math.abs(sc.lnfs)>300;
+    if(!sc.big){
+      sc.is=perPeriodRate(S,s,base); sc.addStep=Math.abs(sc.is)<0.5;
+      sc.fs = S.n==='cont' ? Math.exp(S.rate/s)
+            : (S.rate/S.n<-0.5 ? Math.pow(base,S.n/s) : (sc.is<0 ? Math.exp((S.n/s)*Math.log1p(S.rate/S.n)) : 1+sc.is));
+    }
+    sc.WD=null; sc.WJ=null;
+  }
+  function wdLoad(k,y){ return {y:y,b:k[0],eB:k[1],I:k[2],W:k[3],pr:0,iy:0,wy:0,eI:k[4],pay:k[5],P:k[6],eF:k[7],eW:k[8]||0,used:0,usedE:0,bp:0,bpE:0,pos:0,cnt:0}; }
+  function wdSnap(st){ return [st.b,st.eB,st.I,st.W,st.eI,st.pay,st.P,st.eF,st.eW]; }
+  function wdCopy(c){ return {y:c.y,b:c.b,eB:c.eB,I:c.I,W:c.W,pr:c.pr,iy:c.iy,wy:c.wy,eI:c.eI,pay:c.pay,P:c.P,eF:c.eF,eW:c.eW,used:c.used,usedE:c.usedE,bp:c.bp,bpE:c.bpE,pos:c.pos,cnt:c.cnt}; }
+  function nB(st){ var m=Math.abs(st.b); if(m>HI||(m<LO&&m>0)){ var k=Math.round(Math.log2(m)); st.b=mul2(st.b,-k); st.eB+=k; } }
+  function nI(st){
+    var m=Math.max(Math.abs(st.I),Math.abs(st.pr),Math.abs(st.iy));
+    if(m>HI||(m<LO&&m>0)){ var k=Math.round(Math.log2(m)); shiftI(st,k); }
+  }
+  function shiftI(st,k){ st.I=mul2(st.I,-k); st.pr=mul2(st.pr,-k); st.iy=mul2(st.iy,-k); st.eI+=k; }
+  function nW(st){
+    var m=Math.max(Math.abs(st.W),Math.abs(st.wy));
+    if(m>HI||(m<LO&&m>0)){ var k=Math.round(Math.log2(m)); shiftW(st,k); }
+  }
+  function shiftW(st,k){ st.W=mul2(st.W,-k); st.wy=mul2(st.wy,-k); st.eW+=k; }
+  function nF(st){
+    var m=Math.max(Math.abs(st.pay),Math.abs(st.P));
+    if(m>HI||(m<LO&&m>0)){ var k=Math.round(Math.log2(m)); st.pay=mul2(st.pay,-k); st.P=mul2(st.P,-k); st.eF+=k; }
+  }
+  function roomB(st,x,d){           // make the balance domain able to take x·2^d without overflow
+    if(d>400){ var L=Math.log2(Math.abs(x))+d; if(L>900){ var k=Math.ceil(L-500); st.b=mul2(st.b,-k); st.eB+=k; d-=k; } }
+    return d;
+  }
+  function wdPay(sc,st){
+    var d=roomB(st,st.pay,st.eF-st.eB);
+    st.b+=mul2(st.pay,d); st.P+=st.pay;
+    if(st.b>HI||st.b<-HI) nB(st);
+    if(st.P>HI||st.P<-HI) nF(st);
+  }
+  function wdGrow(sc,st){
+    var g, gE;
+    if(sc.big){
+      var fe=Math.floor(sc.lnfs/LN2), fm=Math.exp(sc.lnfs-fe*LN2), b0=st.b, e0=st.eB;
+      st.b=b0*fm; st.eB=e0+fe;
+      if(fe>0){ g=st.b-mul2(b0,-fe); gE=st.eB; } else { g=mul2(st.b,fe)-b0; gE=e0; }
+    } else if(sc.addStep){ g=st.b*sc.is; st.b+=g; gE=st.eB; }
+    else { var nb=st.b*sc.fs; g=nb-st.b; st.b=nb; gE=st.eB; }
+    if(st.b>HI||st.b<-HI) nB(st);
+    if(g!==0){
+      var d=gE-st.eI;
+      if(d>400){ var L=Math.log2(Math.abs(g))+d; if(L>900){ var k=Math.ceil(L-500); shiftI(st,k); d-=k; } }
+      var v=mul2(g,d); st.I+=v; st.pr+=v; st.iy+=v;
+      if(st.I>HI||st.I<-HI||st.pr>HI||st.pr<-HI||st.iy>HI||st.iy<-HI) nI(st);
+    }
+  }
+  function wdTake(sc,st,forced){
+    var pr=st.pr; st.cnt++; if(pr>0) st.pos++;
+    var w=(forced===undefined?pr>0:forced===1)?sc.X*pr:0;
+    st.pr=0;
+    if(w!==0){
+      var d=roomB(st,w,st.eI-st.eB);
+      st.b-=mul2(w,d);
+      if(st.b>HI||st.b<-HI) nB(st);
+      var dw=st.eI-st.eW;
+      if(dw>400){ var L=Math.log2(Math.abs(w))+dw; if(L>900){ var k=Math.ceil(L-500); shiftW(st,k); dw-=k; } }
+      var v=mul2(w,dw); st.W+=v; st.wy+=v;
+      if(st.W>HI||st.W<-HI||st.wy>HI||st.wy<-HI) nW(st);
+    }
+  }
+  function wdYear(sc,st,forced){
+    var s=sc.ws, ce=sc.cEvery, we=sc.wEvery, contrib=sc.contrib, begin=sc.begin, k;
+    st.iy=0; st.wy=0; st.used=contrib?st.pay:0; st.usedE=st.eF; st.pos=0; st.cnt=0;
+    for(k=0;k<s;k++){
+      if(contrib&&begin&&k%ce===0) wdPay(sc,st);
+      wdGrow(sc,st);
+      if(contrib&&!begin&&(k+1)%ce===0) wdPay(sc,st);
+      if((k+1)%we===0) wdTake(sc,st,forced);
+    }
+    if(contrib){ st.pay+=st.pay*sc.g; }
+    nB(st); nI(st); nW(st); nF(st);
+    st.y++;
+  }
+  function ql(x,e){ return x===0?ZERO:(isFinite(x)?norm(x<0?-1:1,Math.log(Math.abs(x))+e*LN2):norm(x<0?-1:1,Infinity)); }
+  function qx(x,e){
+    if(x===0) return {v:0,s:0,l:-Infinity};
+    if(x!==x) return {v:null,s:1,l:Infinity};
+    if(e===0) return toQf(x);
+    if(e>-1000&&e<1000){ var u=mul2(x,e); if(isFinite(u)&&Math.abs(u)>=2.2250738585072014e-308) return toQf(u); }
+    return toQl(ql(x,e));
+  }
+  function qadd(a,b){
+    if(a.v!==null&&b.v!==null){ var t=a.v+b.v; if(isFinite(t)) return toQf(t); }
+    return toQl(ladd({s:a.s,l:a.l},{s:b.s,l:b.l}));
+  }
+  function qmulN(q,n){
+    if(q.s===0||n===0) return {v:0,s:0,l:-Infinity};
+    if(q.v!==null){ var u=q.v*n; if(isFinite(u)) return toQf(u); }
+    return toQl(norm(q.s*(n<0?-1:1),q.l+Math.log(Math.abs(n))));
+  }
+  function qmulExp(q,x){
+    if(q.s===0) return q;
+    if(q.v!==null){ var E=Math.exp(x); if(E>=2.2250738585072014e-308&&E<Infinity){ var u=q.v*E; if(isFinite(u)) return toQf(u); } }
+    return toQl(norm(q.s,q.l+x));
+  }
+  function qgt(a,b){ if(a.v!==null&&b.v!==null) return a.v>b.v; return lsub({s:a.s,l:a.l},{s:b.s,l:b.l}).s>0; }
+  var WD_FIELDS=['bal','balPrev','paid','paidYr','per','moneyIn','interest','intYr','wdYr','wdCum','total','real'];
+  function wdClean(r){
+    for(var i=0;i<WD_FIELDS.length;i++){
+      var q=r[WD_FIELDS[i]];
+      if(q.l!==q.l||(q.v!==null&&q.v!==q.v)){ q={v:null,s:1,l:Infinity}; r[WD_FIELDS[i]]=q; }
+      if(q.l===Infinity) r.beyond=true;
+    }
+    return r;
+  }
+  function wdPack(sc,st,y){
+    var bal=qx(st.b,st.eB), paid=qx(st.P,st.eF), per=qx(st.used,st.usedE), wdCum=qx(st.W,st.eW);
+    return wdClean({y:y,beyond:false,bal:bal,balPrev:qx(st.bp,st.bpE),paid:paid,paidYr:qmulN(per,sc.p),per:per,
+      moneyIn:qadd(toQf(sc.P0),paid),interest:qx(st.I,st.eI),intYr:qx(st.iy,st.eI),wdYr:qx(st.wy,st.eW),
+      wdCum:wdCum,total:qadd(bal,wdCum),real:qmulExp(bal,-y*sc.lnQ)});
+  }
+  function wdInit(sc){
+    var st=wdLoad([sc.P0,0,0,0,0,sc.contrib?sc.pmt:0,0,0,0],0);
+    nB(st); nF(st); return st;
+  }
+  function wdCrossSt(sc,st){
+    if(st.eF===0&&st.eI===0){ var mi=sc.P0+st.P; return mi>0&&st.I>mi; }
+    var m=qadd(toQf(sc.P0),qx(st.P,st.eF));
+    return m.s>0&&qgt(qx(st.I,st.eI),m);
+  }
+  function wdBuild(sc){
+    if(sc.WD) return sc.WD;
+    var st=wdInit(sc), D=sc.WD={Ysim:0,cross:null,ck:[wdSnap(st)],cur:null,pos:1};
+    var maxY=Math.min(sc.t,Math.floor(WD_STEP_BUDGET/Math.max(sc.ws,2)),WD_YEAR_BUDGET);
+    for(var y=1;y<=maxY;y++){
+      wdYear(sc,st);
+      if(!(isFinite(st.b)&&isFinite(st.I)&&isFinite(st.W)&&isFinite(st.P)&&isFinite(st.pay)&&isFinite(st.eB)&&isFinite(st.eI)&&isFinite(st.eF))) break;
+      if(D.cross===null&&wdCrossSt(sc,st)) D.cross=y;
+      D.Ysim=y; D.pos=st.pos;
+      if(y%CK===0) D.ck.push(wdSnap(st));
+    }
+    return D;
+  }
+  function wdStateAt(sc,y){
+    var D=sc.WD, c=D.cur, st;
+    if(c&&c.y<=y&&y-c.y<CK) st=wdCopy(c);
+    else { var j=Math.floor(y/CK); st=wdLoad(D.ck[j],j*CK); }
+    while(st.y<y) wdYear(sc,st);
+    return st;
+  }
+  function wdRow(sc,y){
+    var st=wdStateAt(sc,y-1); st.bp=st.b; st.bpE=st.eB;
+    wdYear(sc,st); sc.WD.cur=wdCopy(st);
+    return wdPack(sc,st,y);
+  }
+  // Past the simulated span: the year is linear in [b, I, W, P, pay] once the withdrawal pattern is fixed,
+  // so one simulated year on each basis vector gives the yearly matrix, raised by squaring in log magnitudes.
+  function lmat(A,B){ var C=[],i,j,k,t; for(i=0;i<5;i++){ C.push([]); for(j=0;j<5;j++){ t=ZERO; for(k=0;k<5;k++) t=ladd(t,lmul(A[i][k],B[k][j])); C[i].push(t); } } return C; }
+  function lvec(A,x){ var r=[],i,k,t; for(i=0;i<5;i++){ t=ZERO; for(k=0;k<5;k++) t=ladd(t,lmul(A[i][k],x[k])); r.push(t); } return r; }
+  function wdJumpPrep(sc){
+    if(sc.WJ) return sc.WJ;
+    var D=sc.WD, forced=D.pos>0?1:0, cols=[], i, j;
+    for(j=0;j<5;j++){
+      var st=wdLoad([0,0,0,0,0,0,0,0,0],0);
+      if(j===0) st.b=1; else if(j===1) st.I=1; else if(j===2) st.W=1; else if(j===3) st.P=1; else st.pay=1;
+      wdYear(sc,st,forced);
+      cols.push([ql(st.b,st.eB),ql(st.I,st.eI),ql(st.W,st.eW),ql(st.P,st.eF),ql(st.pay,st.eF)]);
+    }
+    var M=[]; for(i=0;i<5;i++) M.push([cols[0][i],cols[1][i],cols[2][i],cols[3][i],cols[4][i]]);
+    var s0=wdStateAt(sc,D.Ysim);
+    return sc.WJ={pow:[M],Y0:D.Ysim,x0:[ql(s0.b,s0.eB),ql(s0.I,s0.eI),ql(s0.W,s0.eW),ql(s0.P,s0.eF),ql(s0.pay,s0.eF)]};
+  }
+  function wdJumpVec(sc,y){
+    var J=wdJumpPrep(sc), n=y-J.Y0, x=J.x0, k=0;
+    while(n>0){
+      if(k>=J.pow.length) J.pow.push(lmat(J.pow[k-1],J.pow[k-1]));
+      if(n%2===1) x=lvec(J.pow[k],x);
+      n=Math.floor(n/2); k++;
+    }
+    return x;
+  }
+  function wdJumpRow(sc,y){
+    var x=wdJumpVec(sc,y-1), i;
+    for(i=0;i<5;i++) if(x[i].s!==0&&!isFinite(x[i].l)){
+      var inf={v:null,s:1,l:Infinity}, bal=toQl(x[0]), paid=toQl(x[3]), wc=toQl(x[2]);
+      return wdClean({y:y,beyond:true,bal:bal,balPrev:bal,paid:paid,paidYr:inf,per:toQl(x[4]),moneyIn:qadd(toQf(sc.P0),paid),
+        interest:toQl(x[1]),intYr:inf,wdYr:inf,wdCum:wc,total:qadd(bal,wc),real:qmulExp(bal,-y*sc.lnQ)});
+    }
+    function ex(){ var m=-Infinity; for(var a=0;a<arguments.length;a++) if(arguments[a].s!==0&&arguments[a].l>m) m=arguments[a].l; return m===-Infinity?0:Math.floor(m/LN2); }
+    function vv(q,e){ return q.s===0?0:q.s*Math.exp(q.l-e*LN2); }
+    var st=wdLoad([0,0,0,0,0,0,0,0,0],y-1);
+    st.eB=ex(x[0]); st.b=vv(x[0],st.eB);
+    st.eI=ex(x[1]); st.I=vv(x[1],st.eI); st.eW=ex(x[2]); st.W=vv(x[2],st.eW);
+    st.eF=ex(x[3],x[4]); st.P=vv(x[3],st.eF); st.pay=vv(x[4],st.eF);
+    st.bp=st.b; st.bpE=st.eB;
+    wdYear(sc,st);
+    return wdPack(sc,st,y);
+  }
+  function wdYearQ(sc,y){
+    var D=wdBuild(sc);
+    if(y===0){ var P=toQf(sc.P0), Z={v:0,s:0,l:-Infinity};
+      return {y:0,beyond:false,bal:P,balPrev:P,paid:Z,paidYr:Z,per:Z,moneyIn:P,interest:Z,intYr:Z,wdYr:Z,wdCum:Z,total:P,real:P}; }
+    return y<=D.Ysim?wdRow(sc,y):wdJumpRow(sc,y);
+  }
+  function wdCrossover(sc){
+    var D=wdBuild(sc), t=sc.t;
+    if(D.cross!==null) return D.cross;
+    if(t<=D.Ysim) return null;
+    var cr=function(y){ var r=wdYearQ(sc,y); return r.moneyIn.s>0&&qgt(r.interest,r.moneyIn); };
+    if(!cr(t)) return null;
+    var lo=D.Ysim, hi=t;
+    while(hi-lo>1){ var mid=lo+Math.floor((hi-lo)/2); if(cr(mid)) hi=mid; else lo=mid; }
+    return hi;
+  }
+  // Yearly log-growth of the balance after withdrawals (while profit stays positive).
+  function lnAeff(sc){
+    if(!sc.wd||sc.lnA<=0) return sc.lnA;
+    var a=sc.lnA/sc.w, e=Math.expm1(a), X=sc.X;
+    if(isFinite(e)){ var u=(1-X)*e; return u>-1?sc.w*Math.log1p(u):-Infinity; }
+    return X<1?sc.w*(a+Math.log(1-X)):-Infinity;
+  }
+
+  function yearAll(sc,y){
+    if(sc.wd) return wdYearQ(sc,y);
+    var r=year(sc,y); r.wdYr={v:0,s:0,l:-Infinity}; r.wdCum={v:0,s:0,l:-Infinity}; r.total=r.bal; return r;
+  }
+  // The r evenly spaced rows inside year y (r divides 12). Steps from the year-(y−1) figures at the finest of the row,
+  // contribution and withdrawal schedules, with the same per-step growth as the yearly figures; the closing row is the
+  // year figure itself, so a period table always ties out to the yearly one. Null when a step's growth can't be stepped.
+  function periods(sc,y,r){
+    var A=yearAll(sc,y-1), B=yearAll(sc,y), out=[], j, k;
+    var s=Math.max(r,sc.p||1,sc.wd?sc.w:1), a=sc.lnA/s;
+    if(A.bal.l===Infinity||B.per.l===Infinity||!(Math.abs(a)<=300)) return null;
+    var pd=sc.p>0?s/sc.p:1, we=sc.wd?s/sc.w:1, re=s/r;
+    var m=-Infinity;
+    if(A.bal.s!==0) m=A.bal.l;
+    if(sc.contrib&&B.per.s!==0) m=Math.max(m,B.per.l+Math.log(Math.max(1,sc.p)));
+    var e=(m>600||m<-600)?Math.floor(m/LN2):0, Z={v:0,s:0,l:-Infinity};
+    function sv(Q){ if(Q.s===0) return 0; if(e===0&&Q.v!==null) return Q.v; return Q.s*Math.exp(Q.l-e*LN2); }
+    function qs(x){ return x===0?Z:(e===0?toQf(x):toQl(ql(x,e))); }
+    var i=Math.expm1(a), f=Math.exp(a), add=Math.abs(i)<0.5;
+    var b=sv(A.bal), pay=sc.contrib?sv(B.per):0, X=sc.wd?sc.X:0;
+    var inP=0, inI=0, inW=0, prof=0, rp=0, ri=0, rw=0, ob=b;
+    for(k=0;k<s;k++){
+      if(sc.contrib&&sc.begin&&k%pd===0){ b+=pay; inP+=pay; rp+=pay; }
+      var g=add?b*i:b*f-b; b+=g; inI+=g; ri+=g; prof+=g;
+      if(sc.contrib&&!sc.begin&&(k+1)%pd===0){ b+=pay; inP+=pay; rp+=pay; }
+      if(sc.wd&&(k+1)%we===0){ var wv=prof>0?X*prof:0; b-=wv; inW+=wv; rw+=wv; prof=0; }
+      if((k+1)%re===0){
+        j=(k+1)/re;
+        var row;
+        if(j===r) row={bal:B.bal,paid:B.paid,moneyIn:B.moneyIn,interest:B.interest,wdCum:B.wdCum,total:B.total,real:B.real};
+        else {
+          var bal=qs(b), wc=qadd(A.wdCum,qs(inW));
+          row={bal:bal,paid:qadd(A.paid,qs(inP)),moneyIn:qadd(A.moneyIn,qs(inP)),interest:qadd(A.interest,qs(inI)),
+               wdCum:wc,total:qadd(bal,wc),real:qmulExp(bal,-(y-1+j/r)*sc.lnQ)};
+        }
+        row.y=y; row.j=j; row.beyond=false; row.per=B.per;
+        row.balPrev=qs(ob); row.paidYr=qs(rp); row.intYr=qs(ri); row.wdYr=qs(rw);
+        out.push(row); rp=0; ri=0; rw=0; ob=b;
+      }
+    }
+    return out;
+  }
+
+  /* ---------- helpers for the page ---------- */
+  function sampleYears(t,maxN,extra){
+    var ys=[], y;
+    if(t<=maxN){ for(y=0;y<=t;y++) ys.push(y); }
+    else { for(var i=0;i<=maxN;i++) ys.push(Math.round(t*i/maxN)); }
+    (extra||[]).forEach(function(e){ if(e!==null&&e>=0&&e<=t) ys.push(e); });
+    ys.sort(function(a,b){return a-b});
+    return ys.filter(function(v,i){return i===0||v!==ys[i-1]});
+  }
+  function q(x){ return toQf(x); }
+  function qFromLog(s,l){ return toQl(norm(s,l)); }
+  function qdiv(a,b){
+    if(b.s===0) return null;
+    if(a.v!==null&&b.v!==null){ var r=a.v/b.v; if(isFinite(r)) return q(r); }
+    return qFromLog(a.s*b.s,a.l-b.l);
+  }
+  function ear(sc){ var e=Math.expm1(sc.lnA); return isFinite(e)?q(e):qFromLog(1,lem(sc.lnA)); }
+
+  return {
+    prepare:prepare, crossed:crossed, sampleYears:sampleYears,
+    q:q, qFromLog:qFromLog, qdiv:qdiv, ear:ear,
+    year:yearAll, periods:periods,
+    crossover:function(sc){ return sc.wd?wdCrossover(sc):crossover(sc); },
+    doubling:function(sc){ var L=lnAeff(sc); return L>0?Math.LN2/L:null; },
+    earNet:function(sc){ var L=lnAeff(sc); if(L===-Infinity) return q(-1); var e=Math.expm1(L); return isFinite(e)?q(e):qFromLog(1,lem(L)); },
+    wdInfo:function(sc){
+      if(!sc.wd) return {on:false};
+      var D=wdBuild(sc), stable=sc.X>=0&&sc.X<=1&&sc.P0>=0&&(!sc.contrib||(sc.pmt>0&&sc.g>-1));
+      return {on:true,Ysim:D.Ysim,extrapolated:sc.t>D.Ysim&&!stable};
+    },
+    _setWdBudget:function(steps,years){ WD_STEP_BUDGET=steps; WD_YEAR_BUDGET=years; },
+    _limits:{CK:CK,PERIOD_BUDGET:PERIOD_BUDGET,SCAN:SCAN}
+  };
+})();
+if(typeof module!=='undefined') module.exports=ENGINE;
+
+</script>
+<script>
+"use strict";
+(function(){
+var E=ENGINE;
+var $=function(s){return document.querySelector(s)};
+var LN10=Math.LN10, BIG=1e15;
+var USD=new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2});
+var USD0=new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0});
+var NUM0=new Intl.NumberFormat('en-US',{maximumFractionDigits:0});
+var FIX={};
+function fixed(v,dp){return (FIX[dp]||(FIX[dp]=new Intl.NumberFormat('en-US',{minimumFractionDigits:dp,maximumFractionDigits:dp}))).format(v)}
+
+/* ---------------- formatting ----------------
+   Engine figures arrive as Q = {v, s, l}: v is the float when it fits, and the value is s·e^l
+   always. Past 10^15 they switch to scientific notation, keeping only the mantissa digits the
+   logarithm can vouch for (a 64-bit exponent rounds, and that rounding lands in the mantissa). */
+function sciL(l){
+  if(!isFinite(l)) return '∞';
+  var e=Math.floor(l/LN10);
+  if(Math.abs(e)>=1e14) return '10^'+e.toExponential(3).replace('e+','e');
+  var rel=Math.abs(l)*8.9e-16, dp=rel>5e-3?0:(rel>5e-4?1:2), r=Math.pow(10,dp);
+  var m=Math.round(Math.exp(l-e*LN10)*r)/r;
+  if(m>=10){m/=10;e+=1}
+  return m.toFixed(dp)+'e'+e;
+}
+function isBig(Q){return Q.v===null||Math.abs(Q.v)>=BIG}
+function neg(Q){return Q.s<0?'−':''}
+function qabs(Q){return {v:Q.v===null?null:Math.abs(Q.v),s:Q.s===0?0:1,l:Q.l}}
+function moneyQ(Q,cents){
+  if(Q.s===0||(!isBig(Q)&&Math.abs(Q.v)<(cents?0.005:0.5))) return cents?'$0.00':'$0';
+  if(isBig(Q)) return neg(Q)+'$'+sciL(Q.l);
+  return neg(Q)+(cents?USD:USD0).format(Math.abs(Q.v));
+}
+function trim1(v,whole){return v.toFixed(whole?0:1).replace(/\.0$/,'')}
+function compactNum(x){
+  var a=Math.abs(x), s=x<0?'−':'';
+  if(!isFinite(x)) return s+'∞';
+  if(a===0) return '0';
+  if(a>=BIG) return s+sciL(Math.log(a));
+  if(a>=1e12) return s+trim1(a/1e12,a>=1e13)+'T';
+  if(a>=1e9) return s+trim1(a/1e9,a>=1e10)+'B';
+  if(a>=1e6) return s+trim1(a/1e6,a>=1e7)+'M';
+  if(a>=1e3) return s+trim1(a/1e3,a>=1e4)+'k';
+  return s+String(+a.toPrecision(a<1?2:3));
+}
+function compactQ(Q){ if(Q.s===0) return '0'; return isBig(Q)?neg(Q)+sciL(Q.l):compactNum(Q.v); }
+function moneyCompactQ(Q){ var c=compactQ(Q); return c.charAt(0)==='−'?'−$'+c.slice(1):'$'+c; }
+function pctQ(Q,dp){
+  if(Q.s===0) return fixed(0,dp)+'%';
+  if(Q.v===null||Math.abs(Q.v)*100>=1e7) return neg(Q)+sciL(Q.l+Math.log(100))+'%';
+  return neg(Q)+fixed(Math.abs(Q.v)*100,dp)+'%';
+}
+function pct(x,dp){return pctQ(E.q(x),dp)}
+function ratioQ(Q){ if(Q.s===0) return '0.00×'; return isBig(Q)?neg(Q)+sciL(Q.l)+'×':neg(Q)+fixed(Math.abs(Q.v),2)+'×'; }
+function yearsText(y){ return Math.abs(y)<1e12?NUM0.format(y):compactNum(y); }
+function durationText(yrs){
+  if(!isFinite(yrs)) return '∞';
+  if(yrs>=1e5) return compactNum(yrs)+' yr';
+  if(yrs>=0.1) return fixed(yrs,2)+' yr';
+  var d=yrs*365.25;
+  if(d>=0.1) return String(+d.toPrecision(3))+' days';
+  var h=d*24;
+  if(h>=0.01) return String(+h.toPrecision(3))+' hours';
+  return yrs.toExponential(2)+' yr';
+}
+function parseTyped(str){
+  var s=String(str).trim().replace(/[,\s$%_]/g,'').replace(/[−–—]/g,'-');
+  var m=/^([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)([kmbt])?$/i.exec(s);
+  if(!m) return NaN;
+  return parseFloat(m[1])*({k:1e3,m:1e6,b:1e9,t:1e12}[(m[2]||'').toLowerCase()]||1);
+}
+
+/* ---------------- scenario + controls ---------------- */
+var DEFAULTS={P0:10000,pmt:500,rate:.07,years:30,g:0,infl:.025,n:12,p:12,timing:'end',wd:.5,wdFreq:0,rateUnit:1};
+var S=Object.assign({},DEFAULTS);
+var typedErr={};
+var N_NAME={1:'yearly',2:'semiannual',4:'quarterly',12:'monthly',365:'daily',cont:'continuous'};
+var N_ADV={1:'yearly',2:'semiannually',4:'quarterly',12:'monthly',365:'daily'};
+
+function tickNum(v){ return Math.abs(v)<1e3 ? String(+v.toPrecision(4)).replace('-','−') : compactNum(v); }
+function tickPct(v){ return tickNum(v)+'%'; }
+var CH=[
+  {k:'P0',   label:'Starting amount', pre:'$', min:0, max:250000, step:500, tf:compactNum},
+  {k:'pmt',  label:'Contribution', pre:'$', min:0, max:5000, step:25, tf:compactNum, needsP:true},
+  {k:'rate', label:'Return rate', post:'%', min:-10, max:30, step:.25, mul:100, dp:2, tf:tickPct},
+  {k:'years',label:'Term', post:'yr', min:1, max:60, step:1, intOnly:true, tf:function(v){return tickNum(Math.round(v))}},
+  {k:'g',    label:'Yearly contribution raise', post:'%', min:0, max:15, step:.5, mul:100, dp:1, tf:tickPct, needsP:true},
+  {k:'infl', label:'Inflation', post:'%', min:0, max:15, step:.1, mul:100, dp:1, tf:tickPct},
+  {k:'wd', label:'Share of profit withdrawn', post:'%', min:0, max:100, step:1, mul:100, dp:1, tf:tickPct, needsW:true}
+];
+CH.forEach(function(c){c.baseMin=c.min;c.baseMax=c.max;c.baseStep=c.step});
+var SEG=[
+  {k:'p', label:'Contribution frequency', opts:[['12','Monthly'],['4','Quarterly'],['1','Yearly'],['0','None']]},
+  {k:'n', label:'Interest added to balance', opts:[['1','Yearly'],['2','Twice a yr'],['4','Quarterly'],['12','Monthly'],['365','Daily'],['cont','Nonstop']]},
+  {k:'timing', label:'Contribution posts', opts:[['begin','Start of period'],['end','End of period']]},
+  {k:'wdFreq', label:'Withdraw profit', opts:[['12','Monthly'],['4','Quarterly'],['1','Yearly'],['0','None']]},
+  {k:'rateUnit', label:'Rate is per', opts:[['1','Per year'],['4','Per quarter'],['12','Per month'],['365','Per day']]}
+];
+var LAYOUT=['P0','pmt','seg:p','seg:timing','g','rate','seg:n','years','infl','seg:wdFreq','wd'];
+var RU_WORD={1:'year',4:'quarter',12:'month',365:'day'}, RU_ABBR={1:'',4:'/QTR',12:'/MO',365:'/DAY'};
+function rateUnit(){ return RU_WORD[S.rateUnit]?S.rateUnit:1; }
+function rateA(){ return S.rate*rateUnit(); }   // the engine takes a nominal annual rate
+
+/* A rail is a scale, not a cage: the value is whatever was typed, and the rail re-ranges
+   around it, relabelling its tick ladder. */
+function niceStep(range,target){
+  if(!(range>0)) return 1;
+  var raw=range/target, e=Math.floor(Math.log10(raw)), b=Math.pow(10,e), m=raw/b;
+  return (m<=1?1:m<=2?2:m<=2.5?2.5:m<=5?5:10)*b;
+}
+function niceCeil(v){
+  if(!(v>0)) return 0;
+  var e=Math.floor(Math.log10(v)), b=Math.pow(10,e), m=v/b;
+  var r=(m<=1?1:m<=2?2:m<=2.5?2.5:m<=5?5:10)*b;
+  return isFinite(r)?r:v;
+}
+function fitRange(c,v){
+  var lo=v<c.baseMin?-niceCeil(-v):c.baseMin, hi=v>c.baseMax?niceCeil(v):c.baseMax;
+  var changed=lo!==c.min||hi!==c.max;
+  c.min=lo; c.max=hi; return changed;
+}
+function ticksFor(c){
+  var span=c.max-c.min, step=niceStep(span,5), out=[c.min], first=Math.ceil((c.min+step*0.5)/step);
+  for(var i=0;i<12;i++){ var v=(first+i)*step; if(v>=c.max-span*0.07) break; out.push(v); }
+  out.push(c.max);
+  return out;
+}
+function ladderHTML(c){
+  var ts=ticksFor(c), span=c.max-c.min;
+  return ts.map(function(t,i){
+    var x=(t-c.min)/span*100, cls=i===0?' first':(i===ts.length-1?' last':'');
+    return '<span class="t" style="left:'+x+'%"></span><span class="l'+cls+'" style="left:'+x+'%">'+c.tf(t)+'</span>';
+  }).join('');
+}
+function applyRange(c){
+  var r=document.getElementById('r-'+c.k), st=c.baseStep;
+  while((c.max-c.min)/st>2000) st*=10;
+  if(c.intOnly) st=Math.max(1,Math.round(st));
+  r.min=c.min; r.max=c.max; r.step=st;
+  r.parentNode.nextElementSibling.innerHTML=ladderHTML(c);
+}
+function fmtField(c,v){
+  if(c.intOnly) return NUM0.format(v);
+  if(Math.abs(v)>=BIG) return v.toExponential(6).replace(/\.?0+e/,'e').replace('e+','e');
+  return c.mul?fixed(v,c.dp):NUM0.format(v);
+}
+
+function buildDeck(){
+  var parts={};
+  CH.forEach(function(c){
+    parts[c.k]='<div class="ch" data-ch="'+c.k+'">'+
+      '<div class="ch-top"><label class="cap" for="n-'+c.k+'">'+c.label+'</label>'+
+      '<span class="ch-val">'+(c.pre?'<span class="pre">'+c.pre+'</span>':'')+
+      '<input class="num" id="n-'+c.k+'" type="text" inputmode="decimal" autocomplete="off" spellcheck="false">'+
+      (c.post?'<span class="post">'+c.post+'</span>':'')+'</span></div>'+
+      (c.k==='rate'?'<div class="seg seg-inline" role="radiogroup" aria-label="Rate is per">'+
+        SEG.filter(function(g){return g.k==='rateUnit'})[0].opts.map(function(o){return '<label class="opt"><input type="radio" name="seg-rateUnit" value="'+o[0]+'"><span>'+o[1]+'</span></label>'}).join('')+
+        '</div><div class="ch-eff" id="eff-note"></div>':'')+
+      '<div class="rail"><input type="range" id="r-'+c.k+'" aria-label="'+c.label+' scale"></div>'+
+      '<div class="ladder"></div>'+
+      '<p class="ch-err" id="e-'+c.k+'" hidden></p></div>';
+  });
+  SEG.forEach(function(g){
+    if(g.k==='rateUnit') return;
+    parts['seg:'+g.k]='<div class="seg-wrap"><span class="cap">'+g.label+'</span><div class="seg" role="radiogroup" aria-label="'+g.label+'">'+
+      g.opts.map(function(o){return '<label class="opt"><input type="radio" name="seg-'+g.k+'" value="'+o[0]+'"><span>'+o[1]+'</span></label>'}).join('')+
+      '</div></div>';
+  });
+  $('#channels').innerHTML=LAYOUT.map(function(k){return parts[k]}).join('');
+
+  CH.forEach(function(c){
+    var mul=c.mul||1, range=document.getElementById('r-'+c.k), num=document.getElementById('n-'+c.k);
+    applyRange(c);
+    range.addEventListener('input',function(){
+      var v=parseFloat(range.value); if(c.intOnly) v=Math.round(v);
+      S[c.k]=v/mul; delete typedErr[c.k]; syncChannel(c); render();
+    });
+    function commit(){
+      if(num.value===num.dataset.shown) return;
+      var v=parseTyped(num.value);
+      if(isNaN(v)) typedErr[c.k]='That isn’t a number this field can read. 1250000, 1.25m and 1.25e6 all work.';
+      else if(!isFinite(v)) typedErr[c.k]='That’s past the largest single number a 64-bit float can hold (about 1.8e308).';
+      else { delete typedErr[c.k]; if(c.intOnly) v=Math.round(v); S[c.k]=v/mul; }
+      syncChannel(c); num.value=num.dataset.shown; render();
+    }
+    num.addEventListener('change',commit);
+    num.addEventListener('keydown',function(e){ if(e.key==='Enter'){ commit(); num.blur(); } });
+  });
+  SEG.forEach(function(g){
+    Array.prototype.forEach.call(document.getElementsByName('seg-'+g.k),function(el){
+      el.addEventListener('change',function(){
+        var v=el.value;
+        S[g.k]=(v==='cont'||v==='begin'||v==='end')?v:parseInt(v,10);
+        if(g.k==='rateUnit') S.n=S.rateUnit;
+        syncAll(); render();
+      });
+    });
+  });
+}
+function syncChannel(c){
+  var mul=c.mul||1, v=S[c.k]*mul;
+  var range=document.getElementById('r-'+c.k), num=document.getElementById('n-'+c.k);
+  if(fitRange(c,v)) applyRange(c);
+  range.value=v;
+  range.parentNode.style.setProperty('--pct',Math.max(0,Math.min(100,(v-c.min)/(c.max-c.min)*100))+'%');
+  var shown=fmtField(c,v);
+  num.dataset.shown=shown;
+  if(document.activeElement!==num) num.value=shown;
+  range.setAttribute('aria-valuetext',(c.pre||'')+shown+(c.post?' '+c.post:''));
+  var off=(c.needsP&&S.p===0)||(c.needsW&&!S.wdFreq);
+  range.closest('.ch').classList.toggle('off',!!off);
+  range.disabled=!!off; num.disabled=!!off;
+}
+function syncAll(){
+  CH.forEach(syncChannel);
+  SEG.forEach(function(g){
+    Array.prototype.forEach.call(document.getElementsByName('seg-'+g.k),function(el){ el.checked=String(S[g.k])===el.value; });
+  });
+}
+
+/* ---------------- results ---------------- */
+var R=null, hoverYear=null, pinYear=null, tableStart=0, GEO=null, PAGE=500;
+function rowAt(y){ return y===R.t?R.end:E.year(R.sc,y); }
+
+function errText(e){
+  if(e.code==='period-exceeds-balance')
+    return 'At '+pct(S.rate,2)+' a '+RU_WORD[rateUnit()]+' compounded '+N_ADV[e.n]+', each period’s rate is '+pct(e.perPeriod,2)+
+      ' — a loss of the whole balance or more — so nothing is left to compound. Compounded '+N_ADV[e.n]+
+      ', any rate above '+pct(-e.n/rateUnit(),2)+' a '+RU_WORD[rateUnit()]+' works; continuous compounding accepts any rate at all.';
+  if(e.code==='prices-at-or-below-zero')
+    return 'Inflation at or below −100% takes prices to zero or less, so there’s no real value to measure. Anything above −100% works.';
+  if(e.code==='negative-term') return 'A projection runs forward from today — use a term of 0 years or more.';
+  if(e.code==='term-not-whole') return 'The schedule runs in whole years — use a whole number.';
+  if(e.code==='term-too-long-to-count') return 'Past 9,007,199,254,740,991 years a 64-bit number can no longer tell one whole year from the next.';
+  return 'These inputs have no arithmetic answer.';
+}
+function paintErrors(){
+  var byK={};
+  if(R&&R.errors) R.errors.forEach(function(e){ byK[e.k]=errText(e); });
+  CH.forEach(function(c){
+    var msg=typedErr[c.k]||byK[c.k]||'', el=document.getElementById('e-'+c.k);
+    el.textContent=msg; el.hidden=!msg;
+    el.parentNode.classList.toggle('bad',!!msg);
+  });
+}
+function paintStamp(){
+  var freq={12:'/mo',4:'/qtr',1:'/yr',0:''}[S.p];
+  $('#scenario-stamp').textContent=[
+    yearsText(S.years)+' YR',
+    S.p?(moneyQ(E.q(S.pmt))+freq):'NO CONTRIB',
+    pct(S.rate,2)+RU_ABBR[rateUnit()],
+    (S.wdFreq&&S.wd)?('WD '+pct(S.wd,0)+{12:'/MO',4:'/QTR',1:'/YR'}[S.wdFreq]):'',
+    'AS OF '+new Intl.DateTimeFormat('en-US',{month:'short',year:'numeric'}).format(new Date()).toUpperCase()
+  ].filter(Boolean).join(' · ');
+}
+function setHeadline(whole,cents){
+  var w=$('#hl-whole'); w.textContent=whole; $('#hl-cents').textContent=cents;
+  w.classList.toggle('long',whole.length>11&&whole.length<=16);
+  w.classList.toggle('longer',whole.length>16);
+}
+function setGauge(k,val,note,none){
+  var el=$('#g-'+k); el.textContent=val; el.classList.toggle('none',!!none);
+  $('#g-'+k+'-note').textContent=note;
+}
+function paintUndefined(){
+  setHeadline('Undefined','');
+  $('#hl-sub').textContent='Adjust the flagged input in the control deck';
+  ['apy','real','dbl','cross'].forEach(function(k){ setGauge(k,'—','',true); });
+  var eff=document.getElementById('eff-note'); if(eff) eff.textContent='';
+  $('#narrate').textContent=R.errors.map(errText).join(' ');
+}
+function paintFigures(){
+  var end=R.end, b=end.bal;
+  if(isBig(b)) setHeadline(neg(b)+'$'+sciL(b.l),'');
+  else {
+    var a=Math.abs(b.v), whole=Math.trunc(a), cents=Math.round((a-whole)*100);
+    if(cents===100){whole+=1;cents=0}
+    setHeadline((b.s<0&&(whole||cents)?'−':'')+'$'+NUM0.format(whole),'.'+String(cents).padStart(2,'0'));
+  }
+  $('#hl-sub').textContent=moneyQ(R.P0)+' start · '+moneyQ(end.paid)+' paid in · '+moneyQ(end.interest)+' interest'+(R.sc.wd?' · '+moneyQ(end.wdCum)+' withdrawn':'');
+
+  var nName=N_NAME[S.n], bp=rateA()*1e4;
+  var earNet=R.sc.wd?E.earNet(R.sc):R.ear;
+  setGauge('apy',pctQ(R.ear,3),(rateUnit()!==1?pct(S.rate,2)+' a '+RU_WORD[rateUnit()]+' = ':'')+pct(rateA(),2)+' nominal a year · '+nName+' · '+(R.sc.wd?('net '+pctQ(earNet,2)+' after withdrawals'):((Math.abs(bp)<1e6?NUM0.format(Math.round(bp)):compactNum(bp))+' bp')));
+  var keep=end.bal.s!==0?E.qdiv(end.real,end.bal):null;
+  setGauge('real',moneyQ(end.real), S.infl!==0?('at '+pct(S.infl,1)+' inflation'+(keep?' · keeps '+pctQ(keep,0)+' of nominal':'')):'no inflation applied');
+  if(R.dbl!==null){
+    var lnR72=Math.log(72)-(earNet.l+Math.log(100));
+    setGauge('dbl',durationText(R.dbl),(R.sc.wd?'after withdrawals · ':'')+'rule of 72 est. '+(lnR72>-690?durationText(Math.exp(lnR72)):sciL(lnR72)+' yr')+' · excludes contributions');
+  } else setGauge('dbl','—',R.sc.wd?'no growth left after withdrawals':'no growth at this rate',true);
+  if(R.cross!==null) setGauge('cross','Year '+yearsText(R.cross),'interest to date passes all money in');
+  else setGauge('cross','—','not reached in '+yearsText(R.t)+'-year term',true);
+  var eff=document.getElementById('eff-note');
+  if(eff){
+    var ADD={1:'once a year',2:'twice a year',4:'every quarter',12:'every month',365:'every day',cont:'continuously'};
+    var line=pct(S.rate,2)+' a '+RU_WORD[rateUnit()]+', added to the balance '+ADD[S.n];
+    if(S.n!=='cont'&&S.n!==rateUnit()){ var each=rateA()/S.n; line+=' as '+pct(each,Math.abs(each)<0.01?4:2)+' each time'; }
+    if(!(rateUnit()===1&&S.n===1)) line+=' · works out to '+pctQ(R.ear,2)+' a year';
+    eff.textContent=line;
+  }
+
+  var T=yearsText(R.t), txt;
+  if(R.t===0){
+    txt='A 0-year term is just the starting line: the balance is the '+moneyQ(R.P0)+' you begin with, before any contribution or interest.';
+  } else if(R.cross!==null){
+    var rc=rowAt(R.cross);
+    txt='From <b>year '+yearsText(R.cross)+'</b> on, the interest earned to date — '+moneyQ(rc.interest)+
+      ' — outweighs every dollar put in, the '+moneyQ(rc.moneyIn)+' of starting amount and contributions together.';
+    if(end.bal.s>0&&end.interest.s>0&&!R.sc.wd) txt+=' By year '+T+' interest is carrying '+pctQ(E.qdiv(end.interest,end.bal),0)+' of the balance.';
+  } else if(end.moneyIn.s<=0){
+    txt='Over '+T+' years the starting amount and contributions net to '+moneyQ(end.moneyIn)+
+      ', so there’s no money in for interest to overtake. The balance ends at '+moneyQ(end.bal)+'.';
+  } else if(end.interest.s<0){
+    txt='After '+T+' years the balance sits <b>'+moneyQ(qabs(end.interest))+' below</b> the '+moneyQ(end.moneyIn)+' put in.';
+  } else if(end.interest.s===0){
+    txt='At this rate nothing accrues: after '+T+' years the balance is exactly the '+moneyQ(end.moneyIn)+' put in, so there’s no interest to overtake it.';
+  } else {
+    txt='Interest hasn’t overtaken contributions within '+T+' years'+
+      (end.bal.s>0&&!R.sc.wd?' — it reaches '+pctQ(E.qdiv(end.interest,end.bal),0)+' of the balance by the end. A longer term or a higher rate moves the crossover into view.':'.');
+  }
+  if(R.sc.wd&&R.t>0){
+    var fq={12:'monthly',4:'quarterly',1:'yearly'}[S.wdFreq], unit={12:'month',4:'quarter',1:'year'}[S.wdFreq];
+    var each=E.qdiv(end.wdYr,E.q(S.wdFreq));
+    txt+=' Withdrawing '+pct(S.wd,0)+' of the profit '+fq+' takes out <b>'+moneyQ(end.wdCum)+'</b> over '+T+' years — '+
+      moneyQ(end.wdYr)+' in the final year, about '+moneyQ(each)+' a '+unit+'.';
+    var wi=E.wdInfo(R.sc);
+    if(wi.extrapolated) txt+=' Past year '+yearsText(wi.Ysim)+' the withdrawal pattern of the last simulated year is carried forward.';
+  }
+  if(end.beyond) txt+=' <b>Some figures pass even a logarithm’s range (beyond 10^(1.8e308))</b>, so they show as ∞.';
+  $('#narrate').innerHTML=txt;
+}
+
+function render(){
+  var pr=E.prepare(Object.assign({},S,{rate:rateA()}));
+  var rpost=document.querySelector('[data-ch="rate"] .post'); if(rpost) rpost.textContent='% a '+RU_WORD[rateUnit()];
+  if(pr.errors) R={errors:pr.errors};
+  else {
+    var sc=pr.sc;
+    R={sc:sc,t:sc.t,end:E.year(sc,sc.t),cross:E.crossover(sc),ear:E.ear(sc),dbl:E.doubling(sc),P0:E.q(S.P0)};
+    if(hoverYear!==null&&hoverYear>R.t) hoverYear=null;
+    if(pinYear!==null&&pinYear>R.t) pinYear=null;
+  }
+  paintErrors(); paintStamp();
+  if(R.errors) paintUndefined(); else paintFigures();
+  drawChart(); drawReadout(); drawTable(); save();
+}
+
+/* ---------------- chart ---------------- */
+var BANDS=[{css:'--band-principal',name:'Starting amount'},{css:'--band-contrib',name:'Contributions'},{css:'--band-interest',name:'Interest'}];
+function paintLegend(){
+  $('#legend').innerHTML=BANDS.map(function(b,i){
+    return '<span class="lg"><i style="background:var('+b.css+')'+(i===0?';background-image:repeating-linear-gradient(45deg,var(--surface) 0 1px,transparent 1px 4px)':'')+'"></i>'+b.name+'</span>';
+  }).join('')+((R&&!R.errors&&R.sc.wd)?'<span class="lg"><i style="background:var(--surface);background-image:repeating-linear-gradient(-45deg,var(--band-interest) 0 2px,transparent 2px 5px)"></i>Withdrawn</span>':'');
+}
+var MONO="font-family:'B612 Mono',Menlo,monospace";
+
+function drawChart(){
+  var wrap=$('#plot-wrap'), svg=$('#plot');
+  var W=Math.max(320,wrap.clientWidth), H=W<640?300:(W<900?360:400);
+  var PAD={l:64,r:W<640?18:112,t:20,b:30}, pw=W-PAD.l-PAD.r, ph=H-PAD.t-PAD.b, o=[];
+  svg.setAttribute('viewBox','0 0 '+W+' '+H); svg.setAttribute('height',H);
+  paintLegend();
+
+  if(!R||R.errors){
+    GEO=null;
+    o.push('<rect x="'+PAD.l+'" y="'+PAD.t+'" width="'+pw+'" height="'+ph+'" style="fill:none;stroke:var(--hairline);stroke-dasharray:3 4"/>');
+    o.push('<text x="'+(PAD.l+pw/2)+'" y="'+(PAD.t+ph/2)+'" text-anchor="middle" style="fill:var(--ink-muted);font-size:11px;letter-spacing:.12em;'+MONO+'">NO CURVE FOR THESE INPUTS</text>');
+    svg.innerHTML=o.join('');
+    svg.setAttribute('aria-label','No chart: these inputs have no arithmetic answer.');
+    return;
+  }
+  var t=R.t, sc=R.sc, wd=!!sc.wd;
+  var ys=E.sampleYears(t,Math.max(60,Math.min(1500,Math.round(pw))),[R.cross]);
+  var rows=ys.map(function(y){return rowAt(y)});
+
+  // Pick display units so plotted floats stay tame at any magnitude.
+  var maxL=-Infinity;
+  function see(Q){ if(Q.s!==0&&isFinite(Q.l)&&Q.l>maxL) maxL=Q.l; }
+  see(R.P0); rows.forEach(function(r){see(r.bal);see(r.moneyIn);if(wd)see(r.total)});
+  var k=(maxL===-Infinity||maxL<Math.log(BIG))?0:Math.floor(maxL/LN10)-2;
+  var CAP=maxL===-Infinity?1:Math.exp(maxL-k*LN10);
+  function pv(Q){
+    if(Q.s===0) return 0;
+    if(!isFinite(Q.l)) return Q.s*CAP;
+    if(k===0&&Q.v!==null) return Q.v;
+    return Q.s*Math.exp(Q.l-k*LN10);
+  }
+  var P0p=pv(R.P0), hi=Math.max(0,P0p), lo=Math.min(0,P0p);
+  var pts=rows.map(function(r){
+    var b=pv(r.bal), m=pv(r.moneyIn), tt=wd?pv(r.total):b;
+    hi=Math.max(hi,b,m,tt); lo=Math.min(lo,b,m,tt);
+    return {y:r.y,b:b,m:m,tt:tt};
+  });
+  var step=niceStep(hi-lo,5), yMax=Math.ceil(hi/step)*step, yMin=Math.floor(lo/step)*step;
+  if(yMax===yMin) yMax=yMin+step;
+  var X=function(y){return PAD.l+(t===0?0:y/t*pw)};
+  var Y=function(v){return PAD.t+ph-(v-yMin)/(yMax-yMin)*ph};
+  var clampV=function(v){return Math.max(yMin,Math.min(yMax,v))};
+
+  o.push('<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" style="fill:var(--band-principal)"/><line x1="0" y1="0" x2="0" y2="6" style="stroke:var(--surface);stroke-width:1"/></pattern><pattern id="hatchW" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><rect width="5" height="5" style="fill:var(--surface)"/><line x1="0" y1="0" x2="0" y2="5" style="stroke:var(--band-interest);stroke-width:2"/></pattern></defs>');
+  o.push('<text x="8" y="'+(PAD.t-7)+'" style="fill:var(--ink-muted);font-size:9px;letter-spacing:.1em;'+MONO+'">USD'+
+    (k===0?'':' ×10<tspan dy="-4" style="font-size:8px">'+(k<1e14?String(k):k.toExponential(2))+'</tspan>')+'</text>');
+
+  for(var i=0;i<=60;i++){
+    var v=yMin+i*step; if(v>yMax+step*1e-9) break;
+    var yy=Y(v);
+    o.push('<line x1="'+PAD.l+'" y1="'+yy+'" x2="'+(PAD.l+pw)+'" y2="'+yy+'" style="stroke:var(--hairline);stroke-width:1"/>');
+    o.push('<line x1="'+(PAD.l-6)+'" y1="'+yy+'" x2="'+PAD.l+'" y2="'+yy+'" style="stroke:var(--hairline-strong);stroke-width:1"/>');
+    o.push('<text x="'+(PAD.l-10)+'" y="'+(yy+3.5)+'" text-anchor="end" style="fill:var(--ink-muted);font-size:11px;'+MONO+'">'+compactNum(Math.abs(v)<step*1e-9?0:v)+'</text>');
+  }
+  var vstep=Math.max(1,Math.round(niceStep(t,6)));
+  var stubEvery=t<=60?1:Math.max(1,Math.round(vstep/5));
+  for(var j=1;j<=12;j++){
+    var yv=j*vstep; if(yv>=t) break;
+    o.push('<line x1="'+X(yv)+'" y1="'+PAD.t+'" x2="'+X(yv)+'" y2="'+(PAD.t+ph)+'" style="stroke:var(--hairline);stroke-width:1;stroke-dasharray:2 4"/>');
+  }
+
+  function areaPath(topFn,botFn){
+    var a=[],b=[],q;
+    for(q=0;q<pts.length;q++) a.push(X(pts[q].y).toFixed(2)+' '+Y(topFn(pts[q])).toFixed(2));
+    for(q=pts.length-1;q>=0;q--) b.push(X(pts[q].y).toFixed(2)+' '+Y(botFn(pts[q])).toFixed(2));
+    return 'M'+a.join(' L')+' L'+b.join(' L')+' Z';
+  }
+  function linePath(fn){ return 'M'+pts.map(function(p){return X(p.y).toFixed(2)+' '+Y(fn(p)).toFixed(2)}).join(' L'); }
+  var zero=function(){return 0}, pTop=function(){return P0p}, cTop=function(p){return p.m}, bTop=function(p){return p.b};
+  var lossy=R.end.interest.s<0;
+  o.push('<path d="'+areaPath(pTop,zero)+'" style="fill:url(#hatch)"/>');
+  o.push('<path d="'+areaPath(cTop,pTop)+'" style="fill:var(--band-contrib)"/>');
+  o.push('<path d="'+areaPath(bTop,cTop)+'" style="fill:var('+(lossy?'--loss':'--band-interest')+');fill-opacity:'+(lossy?'.30':'1')+'"/>');
+  if(wd){
+    var tTop=function(p){return p.tt};
+    o.push('<path d="'+areaPath(tTop,bTop)+'" style="fill:url(#hatchW)"/>');
+    o.push('<path d="'+linePath(tTop)+'" style="fill:none;stroke:var(--band-interest);stroke-width:1"/>');
+  }
+  o.push('<path d="'+linePath(pTop)+'" style="fill:none;stroke:var(--surface);stroke-width:1.25"/>');
+  o.push('<path d="'+linePath(cTop)+'" style="fill:none;stroke:var(--surface);stroke-width:1.25"/>');
+  o.push('<path d="'+linePath(bTop)+'" style="fill:none;stroke:var(--ink);stroke-width:1.5"/>');
+
+  var endB=pv(R.end.bal);
+  if($('#chord').checked){
+    o.push('<line x1="'+X(0)+'" y1="'+Y(P0p)+'" x2="'+X(t)+'" y2="'+Y(endB)+'" style="stroke:var(--ink-muted);stroke-width:1.25;stroke-dasharray:4 3"/>');
+    o.push('<circle cx="'+X(t)+'" cy="'+Y(endB)+'" r="4" style="fill:none;stroke:var(--ink-muted);stroke-width:1.25"/>');
+  }
+  if(R.cross!==null){
+    var cx=X(R.cross), anchor=cx>PAD.l+pw-80?'end':'start';
+    o.push('<line x1="'+cx+'" y1="'+PAD.t+'" x2="'+cx+'" y2="'+(PAD.t+ph)+'" style="stroke:var(--needle);stroke-width:1.25;stroke-dasharray:3 3"/>');
+    o.push('<line x1="'+cx+'" y1="'+(PAD.t+ph)+'" x2="'+cx+'" y2="'+(PAD.t+ph+6)+'" style="stroke:var(--needle);stroke-width:2"/>');
+    o.push('<text x="'+(cx+(anchor==='end'?-5:5))+'" y="'+(PAD.t+11)+'" text-anchor="'+anchor+'" style="fill:var(--needle);font-size:10px;letter-spacing:.12em;font-weight:700;'+MONO+'">CROSSOVER</text>');
+  }
+
+  o.push('<line x1="'+PAD.l+'" y1="'+(PAD.t+ph)+'" x2="'+(PAD.l+pw)+'" y2="'+(PAD.t+ph)+'" style="stroke:var(--hairline-strong);stroke-width:1"/>');
+  for(var s=0,xy=0;s<=200&&xy<=t;s++,xy=s*stubEvery){
+    var isMaj=xy%vstep===0||xy===t;
+    o.push('<line x1="'+X(xy)+'" y1="'+(PAD.t+ph)+'" x2="'+X(xy)+'" y2="'+(PAD.t+ph+(isMaj?5:3))+'" style="stroke:var(--hairline-strong);stroke-width:1"/>');
+  }
+  var xLabel=function(y){return y<1e4?String(y):compactNum(y)};
+  for(var xi=0;xi<=12;xi++){
+    var xl=xi*vstep; if(xl>t) break;
+    if(xl>0&&t-xl<vstep*0.6) continue;
+    o.push('<text x="'+X(xl)+'" y="'+(PAD.t+ph+20)+'" text-anchor="middle" style="fill:var(--ink-muted);font-size:11px;'+MONO+'">'+xLabel(xl)+'</text>');
+  }
+  o.push('<text x="'+X(t)+'" y="'+(PAD.t+ph+20)+'" text-anchor="end" style="fill:var(--ink);font-size:11px;font-weight:700;'+MONO+'">YR '+xLabel(t)+'</text>');
+
+  if(PAD.r>60){
+    var mx=PAD.l+pw, mIn=pv(R.end.moneyIn);
+    var segs=[
+      {q:R.P0, a:0, b:P0p, css:'--band-principal', lab:'START'},
+      {q:R.end.paid, a:P0p, b:mIn, css:'--band-contrib', lab:'PAID IN'},
+      {q:R.end.interest, a:mIn, b:endB, css:lossy?'--loss':'--band-interest', lab:'INTEREST'}
+    ];
+    if(wd) segs.push({q:R.end.wdCum, a:endB, b:pv(R.end.total), css:'--band-interest', lab:'WITHDRAWN'});
+    var nS=segs.length, slots=segs.map(function(_,i){return PAD.t+ph-14-(ph-32)*i/(nS-1)});
+    segs.forEach(function(sg,i){
+      var y1=Y(clampV(sg.a)), y2=Y(clampV(sg.b)), ym=(y1+y2)/2, ysl=slots[i], label=compactQ(sg.q);
+      var fs=label.length<=8?12:(label.length<=12?10:8);
+      o.push('<line x1="'+mx+'" y1="'+y1+'" x2="'+mx+'" y2="'+y2+'" style="stroke:var('+sg.css+');stroke-width:4"/>');
+      o.push('<path d="M'+(mx+4)+' '+ym+' L'+(mx+14)+' '+ym+' L'+(mx+20)+' '+ysl+' L'+(mx+28)+' '+ysl+'" style="fill:none;stroke:var(--hairline);stroke-width:1"/>');
+      o.push('<text x="'+(mx+32)+'" y="'+(ysl-3)+'" style="fill:var(--ink-muted);font-size:9px;letter-spacing:.1em;'+MONO+'">'+sg.lab+'</text>');
+      o.push('<text x="'+(mx+32)+'" y="'+(ysl+9)+'" style="fill:var(--ink);font-size:'+fs+'px;font-weight:700;'+MONO+'">'+label+'</text>');
+    });
+  }
+  o.push('<g id="needle"></g>');
+  svg.innerHTML=o.join('');
+  svg.setAttribute('aria-label','Stacked area chart: over '+yearsText(t)+' years the balance reaches '+moneyQ(R.end.bal)+
+    ', made up of '+moneyQ(R.P0)+' starting amount, '+moneyQ(R.end.paid)+' contributed and '+moneyQ(R.end.interest)+' interest.');
+  GEO={X:X,Y:Y,pv:pv,PAD:PAD,pw:pw,ph:ph,t:t,yMin:yMin,yMax:yMax};
+  drawNeedle();
+}
+function drawNeedle(){
+  var g=document.getElementById('needle'); if(!g) return;
+  if(hoverYear===null||!GEO||!R||R.errors){ g.innerHTML=''; return; }
+  var r=rowAt(hoverYear), hx=GEO.X(hoverYear), o=[];
+  o.push('<line x1="'+hx+'" y1="'+GEO.PAD.t+'" x2="'+hx+'" y2="'+(GEO.PAD.t+GEO.ph)+'" style="stroke:var(--needle);stroke-width:1.5"/>');
+  (R.sc.wd?[R.P0,r.moneyIn,r.bal,r.total]:[R.P0,r.moneyIn,r.bal]).forEach(function(Q){
+    var yy=GEO.Y(Math.max(GEO.yMin,Math.min(GEO.yMax,GEO.pv(Q))));
+    o.push('<circle cx="'+hx+'" cy="'+yy+'" r="3" style="fill:var(--needle);stroke:var(--surface);stroke-width:1"/>');
+  });
+  g.innerHTML=o.join('');
+}
+function drawReadout(){
+  var el=$('#readout');
+  if(!R||R.errors){ el.innerHTML=''; el.hidden=true; return; }
+  el.hidden=false;
+  var y=hoverYear===null?R.t:hoverYear, r=rowAt(y);
+  var lines=[
+    ['Year',y===R.t?('YR '+yearsText(y)+' · END'):('YR '+yearsText(y))],
+    ['Balance',moneyQ(r.bal)],
+    ['Paid in',moneyQ(r.moneyIn),'--band-contrib'],
+    ['Interest',moneyQ(r.interest),'--band-interest'],
+    ['Today’s $',moneyQ(r.real)]
+  ];
+  if(R.sc.wd) lines.splice(4,0,['Withdrawn',moneyQ(r.wdCum),'--band-interest']);
+  el.innerHTML=lines.map(function(l){
+    return '<dt>'+(l[2]?'<span class="chip" style="background:var('+l[2]+')"></span>':'')+l[0]+'</dt><dd>'+l[1]+'</dd>';
+  }).join('');
+}
+
+/* ---------------- schedule ---------------- */
+var COLS=[
+  {h:'{P}',f:function(r){return r.label!==undefined?r.label:NUM0.format(r.y)},th:true},
+  {h:'Balance',f:function(r){return moneyQ(r.bal,true)}},
+  {h:'Paid in ({u})',f:function(r){return r.paidYr.s===0?'—':moneyQ(r.paidYr,true)}},
+  {h:'Interest ({u})',f:function(r){return moneyQ(r.intYr,true)}},
+  {h:'Withdrawn ({u})',f:function(r){return moneyQ(r.wdYr,true)},wdOnly:true},
+  {h:'Cum. paid in',f:function(r){return moneyQ(r.moneyIn,true)}},
+  {h:'Cum. interest',f:function(r){return moneyQ(r.interest,true)}},
+  {h:'Cum. withdrawn',f:function(r){return moneyQ(r.wdCum,true)},wdOnly:true,extra:true},
+  {h:'Today’s $',f:function(r){return moneyQ(r.real)}},
+  {h:'Opening bal.',f:function(r){return moneyQ(r.balPrev,true)},extra:true},
+  {h:'Per payment',f:function(r){return (r.y===0||!S.p)?'—':moneyQ(r.per)},extra:true},
+  {h:'Int ÷ paid in',f:function(r){return r.moneyIn.s>0?ratioQ(E.qdiv(r.interest,r.moneyIn)):'—'},extra:true},
+  {h:'Int share of bal.',f:function(r){return r.bal.s!==0?pctQ(E.qdiv(r.interest,r.bal),1):'—'},extra:true}
+];
+var rowMode='period';
+try{ var rm=localStorage.getItem('cb-rows'); if(rm==='year'||rm==='period') rowMode=rm; }catch(e){}
+var UNIT_NAME={1:'year',2:'half-year',4:'quarter',12:'month'}, UNIT_ABBR={1:'yr',2:'half',4:'qtr',12:'mo'}, UNIT_LETTER={2:'H',4:'Q',12:'M'};
+function rowsPerYear(){ return {1:1,2:2,4:4,12:12,365:12,cont:12}[S.n]||1; }
+function periodMode(){ return rowMode==='period'&&rowsPerYear()>1; }
+function pageYears(){ return periodMode()?Math.floor(PAGE/rowsPerYear()):PAGE; }
+function formulaText(){
+  if(!R||R.errors) return '';
+  var rpy=periodMode()?rowsPerYear():1, unit=UNIT_NAME[rpy], every={12:'month',4:'quarter',1:'year'};
+  var comp=S.n==='cont'?'Continuous compounding':(N_NAME[S.n].charAt(0).toUpperCase()+N_NAME[S.n].slice(1)+' compounding');
+  var t;
+  var ru=rateUnit(), rA=rateA(), rq=pct(S.rate,2)+' a '+RU_WORD[ru];
+  if(S.n!=='cont'&&ru===S.n&&(S.n===rpy||S.n===1)) t=comp+': '+rq+' on the balance';
+  else if(S.n===1&&rpy===1) t=comp+': '+pct(rA,2)+' a year on the balance';
+  else if(S.n===rpy) t=comp+': '+(ru===1?'':rq+' = ')+pct(rA,2)+' a year ÷ '+S.n+' = '+pct(rA/S.n,4)+' a '+unit+' on the balance';
+  else t=comp+' at '+rq+' grows the balance '+pctQ(E.q(Math.expm1(R.sc.lnA/rpy)),4)+' a '+unit;
+  if(R.sc.contrib) t+=' · '+moneyQ(E.q(S.pmt))+' added at the '+(S.timing==='begin'?'start':'end')+' of each '+every[S.p]+(S.g?' (raised '+pct(S.g,1)+' each year)':'');
+  if(R.sc.wd) t+=' · '+pct(S.wd,0)+' of each '+every[S.wdFreq]+'’s growth withdrawn when it’s positive';
+  var fine=Math.max(R.sc.contrib?S.p:0,R.sc.wd?S.wdFreq:0);
+  if(S.n!=='cont'&&fine>S.n) t+=' · between compounding dates money grows at the equivalent '+pctQ(E.q(Math.expm1(R.sc.lnA/fine)),4)+' a '+every[fine];
+  return t+'.';
+}
+function drawTable(){
+  var tbl=$('#sched'), pager=$('#pager'), all=$('#allcols').checked;
+  var wdOn=!!(R&&!R.errors&&R.sc.wd);
+  var cols=COLS.filter(function(c){return (all||!c.extra)&&(!c.wdOnly||wdOn)});
+  var nAll=COLS.filter(function(c){return !c.wdOnly||wdOn}).length;
+  $('#allcols-lab').textContent='Show all '+nAll+' columns';
+  var per=periodMode(), rpy=rowsPerYear(), pageY=pageYears();
+  tbl.tHead.innerHTML='<tr>'+cols.map(function(c){return '<th scope="col">'+c.h.replace('{u}',per?UNIT_ABBR[rpy]:'yr').replace('{P}',per?'Period':'Year')+'</th>'}).join('')+'</tr>';
+  $('#rowsel').hidden=rpy===1;
+  $('#rowsel [data-rows="period"]').textContent='Per '+UNIT_NAME[rpy];
+  Array.prototype.forEach.call(document.querySelectorAll('#rowsel button'),function(b){ b.setAttribute('aria-pressed',String(b.dataset.rows===(per?'period':'year'))); });
+  $('#sched-title').textContent=per?(UNIT_NAME[rpy].charAt(0).toUpperCase()+UNIT_NAME[rpy].slice(1)+'-by-'+UNIT_NAME[rpy]+' schedule'):'Year-by-year schedule';
+  $('#sched-formula').textContent=formulaText();
+  if(!R||R.errors){
+    tbl.tBodies[0].innerHTML=''; pager.hidden=true;
+    $('#sched-note').textContent='No schedule for these inputs';
+    return;
+  }
+  var paged=R.t+1>pageY;
+  tableStart=paged?Math.max(0,Math.min(tableStart,R.t-pageY+1)):0;
+  var last=Math.min(R.t,tableStart+pageY-1), html=[];
+  for(var y=tableStart;y<=last;y++){
+    var group=(per&&y>0)?E.periods(R.sc,y,rpy):null, rowsY;
+    if(group) rowsY=group.map(function(g){ g.label=NUM0.format(y)+' · '+UNIT_LETTER[rpy]+g.j; return g; });
+    else { rowsY=[rowAt(y)]; if(per&&y===0) rowsY[0].label='Start'; }
+    for(var ri=0;ri<rowsY.length;ri++){
+      var rw=rowsY[ri], isEnd=ri===rowsY.length-1, cls=[];
+      if(y===hoverYear) cls.push('mark');
+      if(y===pinYear&&isEnd) cls.push('pin');
+      if(y===R.cross&&isEnd) cls.push('cross');
+      if(per&&isEnd&&rowsY.length>1) cls.push('yend');
+      html.push('<tr data-y="'+y+'"'+(cls.length?' class="'+cls.join(' ')+'"':'')+'>'+cols.map(function(c){
+        var v=c.f(rw);
+        return c.th?'<th scope="row">'+v+'</th>':'<td'+(v.charAt(0)==='−'?' class="neg"':'')+'>'+v+'</td>';
+      }).join('')+'</tr>');
+    }
+  }
+  tbl.tBodies[0].innerHTML=html.join('');
+  pager.hidden=!paged;
+  if(paged){
+    $('#pg-range').textContent='Years '+NUM0.format(tableStart)+'–'+NUM0.format(last)+' of '+NUM0.format(R.t);
+    $('#pg-prev').disabled=tableStart===0;
+    $('#pg-next').disabled=last>=R.t;
+  }
+  $('#sched-note').textContent=per
+    ? ('Every '+UNIT_NAME[rpy]+' of every year'+(paged?', '+pageY+' years a page':'')+' · each year’s last row is the yearly figure · click the chart to jump')
+    : paged
+    ? 'Every year is here, '+PAGE+' at a time · go to any year, or click the chart to jump'
+    : (all?'All '+nAll+' columns · scroll sideways · year column stays put':'Showing '+cols.length+' of '+nAll+' columns · click the chart to jump');
+}
+function jumpTo(y){
+  if(!R||R.errors) return;
+  y=Math.max(0,Math.min(R.t,y));
+  pinYear=y;
+  if(R.t+1>pageYears()) tableStart=Math.max(0,y-2);
+  drawTable();
+  var row=document.querySelector('#sched tbody tr[data-y="'+y+'"]'), box=$('.tscroll');
+  if(row) box.scrollTop=Math.max(0,row.offsetTop-$('#sched thead').offsetHeight-8);
+}
+$('#pg-prev').addEventListener('click',function(){ tableStart-=pageYears(); drawTable(); $('.tscroll').scrollTop=0; });
+$('#pg-next').addEventListener('click',function(){ tableStart+=pageYears(); drawTable(); $('.tscroll').scrollTop=0; });
+Array.prototype.forEach.call(document.querySelectorAll('#rowsel button'),function(b){ b.addEventListener('click',function(){ rowMode=b.dataset.rows; try{localStorage.setItem('cb-rows',rowMode)}catch(e){} tableStart=0; drawTable(); }); });
+function goYear(){ var v=parseTyped($('#pg-go').value); if(isFinite(v)){ jumpTo(Math.round(v)); $('#pg-go').value=''; } }
+$('#pg-go').addEventListener('change',goYear);
+$('#pg-go').addEventListener('keydown',function(e){ if(e.key==='Enter') goYear(); });
+
+/* ---------------- scrub ---------------- */
+var wrap=$('#plot-wrap');
+function yearAt(ev){
+  if(!GEO) return null;
+  var svg=$('#plot'), box=svg.getBoundingClientRect();
+  var x=(ev.clientX-box.left)*(svg.viewBox.baseVal.width/box.width);
+  return Math.max(0,Math.min(GEO.t,Math.round((x-GEO.PAD.l)/GEO.pw*GEO.t)));
+}
+function setHover(y){
+  if(y===hoverYear) return;
+  var prev=hoverYear, tb=$('#sched tbody');
+  hoverYear=y; drawNeedle(); drawReadout();
+  if(prev!==null) Array.prototype.forEach.call(tb.querySelectorAll('tr[data-y="'+prev+'"]'),function(a){ a.classList.remove('mark'); });
+  if(y!==null) Array.prototype.forEach.call(tb.querySelectorAll('tr[data-y="'+y+'"]'),function(b){ b.classList.add('mark'); });
+}
+wrap.addEventListener('pointermove',function(e){ var y=yearAt(e); if(y!==null) setHover(y); });
+wrap.addEventListener('pointerleave',function(){ setHover(null); });
+wrap.addEventListener('click',function(e){ var y=yearAt(e); if(y!==null) jumpTo(y); });
+
+/* ---------------- theme + persistence ---------------- */
+function setTheme(v){
+  if(v==='system') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme',v);
+  Array.prototype.forEach.call(document.querySelectorAll('[data-theme-set]'),function(b){ b.setAttribute('aria-pressed',String(b.dataset.themeSet===v)); });
+  try{localStorage.setItem('cb-theme',v)}catch(e){}
+}
+Array.prototype.forEach.call(document.querySelectorAll('[data-theme-set]'),function(b){ b.addEventListener('click',function(){setTheme(b.dataset.themeSet)}); });
+function save(){ try{localStorage.setItem('cb-scenario',JSON.stringify(S))}catch(e){} }
+function load(){
+  try{
+    var t=localStorage.getItem('cb-theme'); if(t) setTheme(t);
+    var raw=localStorage.getItem('cb-scenario'); if(!raw) return;
+    var o=JSON.parse(raw);
+    Object.keys(DEFAULTS).forEach(function(k){ if(o[k]!==undefined&&o[k]!==null) S[k]=o[k]; });
+  }catch(e){}
+}
+
+/* ---------------- boot ---------------- */
+buildDeck(); load(); syncAll();
+$('#chord').addEventListener('change',drawChart);
+$('#allcols').addEventListener('change',drawTable);
+$('#reset').addEventListener('click',function(){
+  S=Object.assign({},DEFAULTS); typedErr={}; hoverYear=null; pinYear=null; tableStart=0;
+  syncAll(); render();
+});
+render();
+new ResizeObserver(function(){ drawChart(); }).observe($('#plot-wrap'));
+})();
+</script>
+
+</body></html>
