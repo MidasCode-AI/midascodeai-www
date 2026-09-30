@@ -5,15 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Compounding Bench — MidasCode.AI</title>
-    <meta name="description" content="A compound-interest bench: starting amount, contributions, raises, inflation and profit withdrawals, with a year-by-year schedule and no caps on any input.">
+    <meta name="description" content="A compound-interest bench: starting amount, contributions, raises and inflation, plus withdrawals, fees and tax taken from profit, with a year-by-year schedule and no caps on any input.">
     <link rel="canonical" href="https://midascode.ai/compounding-bench/">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://midascode.ai/compounding-bench/">
     <meta property="og:title" content="Compounding Bench — MidasCode.AI">
-    <meta property="og:description" content="A compound-interest bench: starting amount, contributions, raises, inflation and profit withdrawals, with a year-by-year schedule and no caps on any input.">
+    <meta property="og:description" content="A compound-interest bench: starting amount, contributions, raises and inflation, plus withdrawals, fees and tax taken from profit, with a year-by-year schedule and no caps on any input.">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="Compounding Bench — MidasCode.AI">
-    <meta name="twitter:description" content="A compound-interest bench: starting amount, contributions, raises, inflation and profit withdrawals, with a year-by-year schedule and no caps on any input.">
+    <meta name="twitter:description" content="A compound-interest bench: starting amount, contributions, raises and inflation, plus withdrawals, fees and tax taken from profit, with a year-by-year schedule and no caps on any input.">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <!-- B612 / B612 Mono self-hosted: no third-party request, no visitor IP sent off-site.
          SIL Open Font License 1.1 - see fonts/OFL.txt -->
@@ -345,11 +345,11 @@ footer{padding:18px;border-top:1px solid var(--hairline-strong);background:var(-
     <h2>Method</h2>
     <p>The rate covers the period you pick beside it (per year, quarter, month or day), and &ldquo;interest added to balance&rdquo; is how often the earned interest joins the balance and starts earning too. Picking a rate period sets the adding schedule to match; change it separately for quotes like &ldquo;7% a year, added monthly&rdquo;, where each monthly addition is 7% &divide; 12. The effective annual yield is <code>(1 + r/n)^n &minus; 1</code> for discrete compounding and <code>e^r &minus; 1</code> for continuous. Contributions are grown at the equivalent periodic rate <code>(1 + EAR)^(1/p) &minus; 1</code>, so the yield is the same however often the account compounds. Where compounding is less frequent than contributions, this is a smooth approximation of a stepped credit &mdash; it will not tie out to a passbook that posts interest once a year.</p>
     <p>Contributions change on each anniversary, so year one pays the amount you set and year <i>t</i> pays that amount stepped <i>t</i>&minus;1 times; a negative raise shrinks payments and &minus;100% stops them after year one. Doubling time is for the starting amount alone and ignores contributions; the Rule of 72 estimate sits beside the exact solve. Crossover is the first year where interest earned to date exceeds everything put in to date, starting amount included, once more than zero has gone in.</p>
-    <p>Withdrawals take a share of the profit &mdash; the growth since the previous withdrawal, contributions not counted &mdash; at the end of each month, quarter or year, and only when that profit is positive. What comes out stops compounding, so the chart stacks it as a hatched band above the balance. The account is simulated period by period at the finer of the contribution and withdrawal schedules; for terms past the simulated span, the last simulated year is raised to the remaining power.</p>
+    <p>&ldquo;Withdrawals, fees &amp; tax&rdquo; is one control for anything paid out of gains: money you withdraw, a performance fee or profit share, tax on gains. It takes a share of the profit &mdash; the growth since the last time it was taken, contributions not counted &mdash; at the end of each month, quarter or year, and only when that profit is positive. Enter one combined share: charges on the same profit add up (20% and 25% make 45%), while a charge on what an earlier one left compounds (a 20% fee, then 25% tax on the rest, makes 40%). Costs that are not a share of profit &mdash; a flat fee, or a yearly percentage of the balance &mdash; don&rsquo;t fit this control; lower the return rate instead. What is taken out stops compounding, so the chart stacks it as a hatched band above the balance. The account is simulated period by period at the finer of the contribution schedule and this one; for terms past the simulated span, the last simulated year is raised to the remaining power.</p>
     <p>There are no caps. Every year of any term comes from a closed form rather than a step-by-step loop, so a million-year term costs no more than a thirty-year one, and the schedule pages through every year of it. Figures past a 64-bit float&rsquo;s range (about 1.8&thinsp;&times;&thinsp;10<sup>308</sup>) are carried as logarithms and shown in scientific notation, with only as many mantissa digits as the logarithm can vouch for. Crossover is found exactly across the first 10,000 years, then bracketed on a fine grid and bisected to the exact year. The only inputs refused are the ones with no arithmetic answer: a compounding period whose rate is &minus;100% or lower (so the bound moves with frequency, and continuous compounding has none), inflation at or below &minus;100%, and a term that is negative, fractional, or longer than a 64-bit number can count in whole years.</p>
     <div class="disclaimer">
       <h3>Not advice, and not a projection of any real account</h3>
-      <p>These figures are fixed&#8209;rate arithmetic, not a forecast. Real returns vary year to year and can be negative; taxes, fees, spreads and slippage are not modelled, and no rate shown here is one MidasCode.AI offers, quotes or has achieved. Trading and investing carry substantial risk of loss and are not suitable for everyone. Past performance is not indicative of future results. Nothing on this page is investment advice, a solicitation, or an offer to manage funds — MidasCode.AI builds and operates trading technology.</p>
+      <p>These figures are fixed&#8209;rate arithmetic, not a forecast. Real returns vary year to year and can be negative; spreads and slippage are not modelled, fees and tax only as far as you enter them as a share of profit, and no rate shown here is one MidasCode.AI offers, quotes or has achieved. Trading and investing carry substantial risk of loss and are not suitable for everyone. Past performance is not indicative of future results. Nothing on this page is investment advice, a solicitation, or an offer to manage funds — MidasCode.AI builds and operates trading technology.</p>
     </div>
     <p class="back">A tool from <a href="/">MidasCode.AI</a> — trading systems and quant infrastructure. See the full <a href="/#risk">risk disclosure</a>.</p>
   </div>
@@ -1177,14 +1177,14 @@ var CH=[
   {k:'years',label:'Term', post:'yr', min:1, max:60, step:1, intOnly:true, tf:function(v){return tickNum(Math.round(v))}},
   {k:'g',    label:'Yearly contribution raise', post:'%', min:0, max:15, step:.5, mul:100, dp:1, tf:tickPct, needsP:true},
   {k:'infl', label:'Inflation', post:'%', min:0, max:15, step:.1, mul:100, dp:1, tf:tickPct},
-  {k:'wd', label:'Share of profit withdrawn', post:'%', min:0, max:100, step:1, mul:100, dp:1, tf:tickPct, needsW:true}
+  {k:'wd', label:'Share of profit taken out', post:'%', min:0, max:100, step:1, mul:100, dp:1, tf:tickPct, needsW:true}
 ];
 CH.forEach(function(c){c.baseMin=c.min;c.baseMax=c.max;c.baseStep=c.step});
 var SEG=[
   {k:'p', label:'Contribution frequency', opts:[['12','Monthly'],['4','Quarterly'],['1','Yearly'],['0','None']]},
   {k:'n', label:'Interest added to balance', opts:[['1','Yearly'],['2','Twice a yr'],['4','Quarterly'],['12','Monthly'],['365','Daily'],['cont','Nonstop']]},
   {k:'timing', label:'Contribution posts', opts:[['begin','Start of period'],['end','End of period']]},
-  {k:'wdFreq', label:'Withdraw profit', opts:[['12','Monthly'],['4','Quarterly'],['1','Yearly'],['0','None']]},
+  {k:'wdFreq', label:'Withdrawals, fees &amp; tax', hint:'Anything paid out of profit — enter one combined share', opts:[['12','Monthly'],['4','Quarterly'],['1','Yearly'],['0','None']]},
   {k:'rateUnit', label:'Rate is per', opts:[['1','Per year'],['4','Per quarter'],['12','Per month'],['365','Per day']]}
 ];
 var LAYOUT=['P0','pmt','seg:p','seg:timing','g','rate','seg:n','years','infl','seg:wdFreq','wd'];
@@ -1255,7 +1255,7 @@ function buildDeck(){
     if(g.k==='rateUnit') return;
     parts['seg:'+g.k]='<div class="seg-wrap"><span class="cap">'+g.label+'</span><div class="seg" role="radiogroup" aria-label="'+g.label+'">'+
       g.opts.map(function(o){return '<label class="opt"><input type="radio" name="seg-'+g.k+'" value="'+o[0]+'"><span>'+o[1]+'</span></label>'}).join('')+
-      '</div></div>';
+      '</div>'+(g.hint?'<div class="ch-eff">'+g.hint+'</div>':'')+'</div>';
   });
   $('#channels').innerHTML=LAYOUT.map(function(k){return parts[k]}).join('');
 
@@ -1340,7 +1340,7 @@ function paintStamp(){
     yearsText(S.years)+' YR',
     S.p?(moneyQ(E.q(S.pmt))+freq):'NO CONTRIB',
     pct(S.rate,2)+RU_ABBR[rateUnit()],
-    (S.wdFreq&&S.wd)?('WD '+pct(S.wd,0)+{12:'/MO',4:'/QTR',1:'/YR'}[S.wdFreq]):'',
+    (S.wdFreq&&S.wd)?('OUT '+pct(S.wd,0)+{12:'/MO',4:'/QTR',1:'/YR'}[S.wdFreq]):'',
     'AS OF '+new Intl.DateTimeFormat('en-US',{month:'short',year:'numeric'}).format(new Date()).toUpperCase()
   ].filter(Boolean).join(' · ');
 }
@@ -1368,17 +1368,17 @@ function paintFigures(){
     if(cents===100){whole+=1;cents=0}
     setHeadline((b.s<0&&(whole||cents)?'−':'')+'$'+NUM0.format(whole),'.'+String(cents).padStart(2,'0'));
   }
-  $('#hl-sub').textContent=moneyQ(R.P0)+' start · '+moneyQ(end.paid)+' paid in · '+moneyQ(end.interest)+' interest'+(R.sc.wd?' · '+moneyQ(end.wdCum)+' withdrawn':'');
+  $('#hl-sub').textContent=moneyQ(R.P0)+' start · '+moneyQ(end.paid)+' paid in · '+moneyQ(end.interest)+' interest'+(R.sc.wd?' · '+moneyQ(end.wdCum)+' taken out':'');
 
   var nName=N_NAME[S.n], bp=rateA()*1e4;
   var earNet=R.sc.wd?E.earNet(R.sc):R.ear;
-  setGauge('apy',pctQ(R.ear,3),(rateUnit()!==1?pct(S.rate,2)+' a '+RU_WORD[rateUnit()]+' = ':'')+pct(rateA(),2)+' nominal a year · '+nName+' · '+(R.sc.wd?('net '+pctQ(earNet,2)+' after withdrawals'):((Math.abs(bp)<1e6?NUM0.format(Math.round(bp)):compactNum(bp))+' bp')));
+  setGauge('apy',pctQ(R.ear,3),(rateUnit()!==1?pct(S.rate,2)+' a '+RU_WORD[rateUnit()]+' = ':'')+pct(rateA(),2)+' nominal a year · '+nName+' · '+(R.sc.wd?('net '+pctQ(earNet,2)+' after what’s taken out'):((Math.abs(bp)<1e6?NUM0.format(Math.round(bp)):compactNum(bp))+' bp')));
   var keep=end.bal.s!==0?E.qdiv(end.real,end.bal):null;
   setGauge('real',moneyQ(end.real), S.infl!==0?('at '+pct(S.infl,1)+' inflation'+(keep?' · keeps '+pctQ(keep,0)+' of nominal':'')):'no inflation applied');
   if(R.dbl!==null){
     var lnR72=Math.log(72)-(earNet.l+Math.log(100));
-    setGauge('dbl',durationText(R.dbl),(R.sc.wd?'after withdrawals · ':'')+'rule of 72 est. '+(lnR72>-690?durationText(Math.exp(lnR72)):sciL(lnR72)+' yr')+' · excludes contributions');
-  } else setGauge('dbl','—',R.sc.wd?'no growth left after withdrawals':'no growth at this rate',true);
+    setGauge('dbl',durationText(R.dbl),(R.sc.wd?'after what’s taken out · ':'')+'rule of 72 est. '+(lnR72>-690?durationText(Math.exp(lnR72)):sciL(lnR72)+' yr')+' · excludes contributions');
+  } else setGauge('dbl','—',R.sc.wd?'no growth left after what’s taken out':'no growth at this rate',true);
   if(R.cross!==null) setGauge('cross','Year '+yearsText(R.cross),'interest to date passes all money in');
   else setGauge('cross','—','not reached in '+yearsText(R.t)+'-year term',true);
   var eff=document.getElementById('eff-note');
@@ -1412,10 +1412,10 @@ function paintFigures(){
   if(R.sc.wd&&R.t>0){
     var fq={12:'monthly',4:'quarterly',1:'yearly'}[S.wdFreq], unit={12:'month',4:'quarter',1:'year'}[S.wdFreq];
     var each=E.qdiv(end.wdYr,E.q(S.wdFreq));
-    txt+=' Withdrawing '+pct(S.wd,0)+' of the profit '+fq+' takes out <b>'+moneyQ(end.wdCum)+'</b> over '+T+' years — '+
+    txt+=' Taking '+pct(S.wd,0)+' of the profit out '+fq+' — as withdrawals, fees or tax — removes <b>'+moneyQ(end.wdCum)+'</b> over '+T+' years: '+
       moneyQ(end.wdYr)+' in the final year, about '+moneyQ(each)+' a '+unit+'.';
     var wi=E.wdInfo(R.sc);
-    if(wi.extrapolated) txt+=' Past year '+yearsText(wi.Ysim)+' the withdrawal pattern of the last simulated year is carried forward.';
+    if(wi.extrapolated) txt+=' Past year '+yearsText(wi.Ysim)+' the last simulated year’s pattern is carried forward.';
   }
   if(end.beyond) txt+=' <b>Some figures pass even a logarithm’s range (beyond 10^(1.8e308))</b>, so they show as ∞.';
   $('#narrate').innerHTML=txt;
@@ -1441,7 +1441,7 @@ var BANDS=[{css:'--band-principal',name:'Starting amount'},{css:'--band-contrib'
 function paintLegend(){
   $('#legend').innerHTML=BANDS.map(function(b,i){
     return '<span class="lg"><i style="background:var('+b.css+')'+(i===0?';background-image:repeating-linear-gradient(45deg,var(--surface) 0 1px,transparent 1px 4px)':'')+'"></i>'+b.name+'</span>';
-  }).join('')+((R&&!R.errors&&R.sc.wd)?'<span class="lg"><i style="background:var(--surface);background-image:repeating-linear-gradient(-45deg,var(--band-interest) 0 2px,transparent 2px 5px)"></i>Withdrawn</span>':'');
+  }).join('')+((R&&!R.errors&&R.sc.wd)?'<span class="lg"><i style="background:var(--surface);background-image:repeating-linear-gradient(-45deg,var(--band-interest) 0 2px,transparent 2px 5px)"></i>Taken out</span>':'');
 }
 var MONO="font-family:'B612 Mono',Menlo,monospace";
 
@@ -1559,7 +1559,7 @@ function drawChart(){
       {q:R.end.paid, a:P0p, b:mIn, css:'--band-contrib', lab:'PAID IN'},
       {q:R.end.interest, a:mIn, b:endB, css:lossy?'--loss':'--band-interest', lab:'INTEREST'}
     ];
-    if(wd) segs.push({q:R.end.wdCum, a:endB, b:pv(R.end.total), css:'--band-interest', lab:'WITHDRAWN'});
+    if(wd) segs.push({q:R.end.wdCum, a:endB, b:pv(R.end.total), css:'--band-interest', lab:'TAKEN OUT'});
     var nS=segs.length, slots=segs.map(function(_,i){return PAD.t+ph-14-(ph-32)*i/(nS-1)});
     segs.forEach(function(sg,i){
       var y1=Y(clampV(sg.a)), y2=Y(clampV(sg.b)), ym=(y1+y2)/2, ysl=slots[i], label=compactQ(sg.q);
@@ -1600,7 +1600,7 @@ function drawReadout(){
     ['Interest',moneyQ(r.interest),'--band-interest'],
     ['Today’s $',moneyQ(r.real)]
   ];
-  if(R.sc.wd) lines.splice(4,0,['Withdrawn',moneyQ(r.wdCum),'--band-interest']);
+  if(R.sc.wd) lines.splice(4,0,['Taken out',moneyQ(r.wdCum),'--band-interest']);
   el.innerHTML=lines.map(function(l){
     return '<dt>'+(l[2]?'<span class="chip" style="background:var('+l[2]+')"></span>':'')+l[0]+'</dt><dd>'+l[1]+'</dd>';
   }).join('');
@@ -1612,10 +1612,10 @@ var COLS=[
   {h:'Balance',f:function(r){return moneyQ(r.bal,true)}},
   {h:'Paid in ({u})',f:function(r){return r.paidYr.s===0?'—':moneyQ(r.paidYr,true)}},
   {h:'Interest ({u})',f:function(r){return moneyQ(r.intYr,true)}},
-  {h:'Withdrawn ({u})',f:function(r){return moneyQ(r.wdYr,true)},wdOnly:true},
+  {h:'Taken out ({u})',f:function(r){return moneyQ(r.wdYr,true)},wdOnly:true},
   {h:'Cum. paid in',f:function(r){return moneyQ(r.moneyIn,true)}},
   {h:'Cum. interest',f:function(r){return moneyQ(r.interest,true)}},
-  {h:'Cum. withdrawn',f:function(r){return moneyQ(r.wdCum,true)},wdOnly:true,extra:true},
+  {h:'Cum. taken out',f:function(r){return moneyQ(r.wdCum,true)},wdOnly:true,extra:true},
   {h:'Today’s $',f:function(r){return moneyQ(r.real)}},
   {h:'Opening bal.',f:function(r){return moneyQ(r.balPrev,true)},extra:true},
   {h:'Per payment',f:function(r){return (r.y===0||!S.p)?'—':moneyQ(r.per)},extra:true},
@@ -1639,7 +1639,7 @@ function formulaText(){
   else if(S.n===rpy) t=comp+': '+(ru===1?'':rq+' = ')+pct(rA,2)+' a year ÷ '+S.n+' = '+pct(rA/S.n,4)+' a '+unit+' on the balance';
   else t=comp+' at '+rq+' grows the balance '+pctQ(E.q(Math.expm1(R.sc.lnA/rpy)),4)+' a '+unit;
   if(R.sc.contrib) t+=' · '+moneyQ(E.q(S.pmt))+' added at the '+(S.timing==='begin'?'start':'end')+' of each '+every[S.p]+(S.g?' (raised '+pct(S.g,1)+' each year)':'');
-  if(R.sc.wd) t+=' · '+pct(S.wd,0)+' of each '+every[S.wdFreq]+'’s growth withdrawn when it’s positive';
+  if(R.sc.wd) t+=' · '+pct(S.wd,0)+' of each '+every[S.wdFreq]+'’s growth taken out when it’s positive';
   var fine=Math.max(R.sc.contrib?S.p:0,R.sc.wd?S.wdFreq:0);
   if(S.n!=='cont'&&fine>S.n) t+=' · between compounding dates money grows at the equivalent '+pctQ(E.q(Math.expm1(R.sc.lnA/fine)),4)+' a '+every[fine];
   return t+'.';
